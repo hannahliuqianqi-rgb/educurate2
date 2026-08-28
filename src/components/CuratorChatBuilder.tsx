@@ -418,39 +418,42 @@ export const CuratorChatBuilder: React.FC<CuratorChatBuilderProps> = ({ onNaviga
               <div className="flex flex-col gap-2">
                 <label className="text-label-md font-label-md text-on-surface font-semibold">Current Proficiency Level</label>
                 <div className="flex bg-surface-muted rounded-lg p-1 border border-outline-variant">
-                  <button
-                    type="button"
-                    onClick={() => setProficiency('beginner')}
-                    className={`flex-1 py-2 rounded-md font-label-md text-label-md transition-all cursor-pointer border-none ${
-                      proficiency === 'beginner' 
-                        ? 'bg-surface-container-lowest shadow-sm text-primary font-bold' 
-                        : 'bg-transparent text-on-surface-variant'
-                    }`}
-                  >
-                    Beginner
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setProficiency('intermediate')}
-                    className={`flex-1 py-2 rounded-md font-label-md text-label-md transition-all cursor-pointer border-none ${
-                      proficiency === 'intermediate' 
-                        ? 'bg-surface-container-lowest shadow-sm text-primary font-bold' 
-                        : 'bg-transparent text-on-surface-variant'
-                    }`}
-                  >
-                    Intermediate
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setProficiency('advanced')}
-                    className={`flex-1 py-2 rounded-md font-label-md text-label-md transition-all cursor-pointer border-none ${
-                      proficiency === 'advanced' 
-                        ? 'bg-surface-container-lowest shadow-sm text-primary font-bold' 
-                        : 'bg-transparent text-on-surface-variant'
-                    }`}
-                  >
-                    Advanced
-                  </button>
+                  <label className="flex-1 text-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="proficiency" 
+                      checked={proficiency === 'beginner'} 
+                      onChange={() => setProficiency('beginner')} 
+                      className="peer sr-only" 
+                    />
+                    <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all font-semibold">
+                      Beginner
+                    </div>
+                  </label>
+                  <label className="flex-1 text-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="proficiency" 
+                      checked={proficiency === 'intermediate'} 
+                      onChange={() => setProficiency('intermediate')} 
+                      className="peer sr-only" 
+                    />
+                    <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all font-semibold">
+                      Intermediate
+                    </div>
+                  </label>
+                  <label className="flex-1 text-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="proficiency" 
+                      checked={proficiency === 'advanced'} 
+                      onChange={() => setProficiency('advanced')} 
+                      className="peer sr-only" 
+                    />
+                    <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all font-semibold">
+                      Advanced
+                    </div>
+                  </label>
                 </div>
               </div>
 
