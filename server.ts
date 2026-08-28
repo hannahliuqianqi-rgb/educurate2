@@ -47,14 +47,31 @@ async function startServer() {
 
   app.use(express.json());
 
-  // Health check
-  app.get("/api/health", (_req: Request, res: Response) => {
+  // Health check endpoints (/api/health and /api/health.js)
+  const healthHandler = (_req: Request, res: Response) => {
+    const hasGoogleApiKey = Boolean(getGoogleApiKey());
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     res.json({
       status: "ok",
-      hasGoogleApiKey: Boolean(getGoogleApiKey()),
-      services: ["youtube", "books", "fonts", "gemini"],
+      timestamp: new Date().toISOString(),
+      uptimeSeconds: Math.floor(process.uptime()),
+      environment: process.env.NODE_ENV || "development",
+      hasGoogleApiKey,
+      authMethod: "X-goog-api-key HTTP header (secure)",
+      services: {
+        youtube_video_stats: "/api/youtube/video",
+        youtube_channel_stats: "/api/youtube/channel",
+        youtube_playlist_items: "/api/youtube/playlist-items",
+        youtube_comments: "/api/youtube/comments",
+        youtube_search: "/api/youtube/search",
+        google_books_volumes: "/api/books/volumes",
+        google_fonts_catalogue: "/api/fonts",
+      },
     });
-  });
+  };
+
+  app.get("/api/health", healthHandler);
+  app.get("/api/health.js", healthHandler);
 
   // ==========================================
   // 1. YouTube - Stats for one video (1 unit)
