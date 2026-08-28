@@ -7,31 +7,65 @@ interface LearningPlanDetailProps {
 }
 
 export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNavigate }) => {
-  const [activeTab, setActiveTab] = useState<'form' | 'chat'>('form');
-  const [ageGroup, setAgeGroup] = useState<string>('early_childhood');
-  const [topic, setTopic] = useState<string>('Quantum Physics & Quantum Circuits');
-  const [proficiency, setProficiency] = useState<string>('intermediate');
-  const [duration, setDuration] = useState<string>('30 Days');
-  const [dailyEffort, setDailyEffort] = useState<string>('30 mins/day');
+  const [completedDays, setCompletedDays] = useState<number[]>([1, 2]);
+  const [activeDay, setActiveDay] = useState<number>(3);
+  const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
+  const [readingStarted, setReadingStarted] = useState<boolean>(false);
+  const [mentorModalOpen, setMentorModalOpen] = useState<boolean>(false);
+  const [customModalOpen, setCustomModalOpen] = useState<boolean>(false);
+  const [questionText, setQuestionText] = useState<string>('');
+  const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'mentor'; text: string }>>([
+    {
+      sender: 'mentor',
+      text: "Hello! I'm here to help clarify superposition, Dirac bra-ket notation, or any questions about Day 3's materials.",
+    },
+  ]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleGeneratePlan = (e: React.FormEvent) => {
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleMarkVideoComplete = () => {
+    const next = !videoCompleted;
+    setVideoCompleted(next);
+    if (next) {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 },
+      });
+      triggerToast('Video lesson completed! +50 XP awarded.');
+    }
+  };
+
+  const handleStartReading = () => {
+    setReadingStarted(true);
+    triggerToast('Opening Chapter 9 in EduCurate Reader...');
+  };
+
+  const handleSendQuestion = (e: React.FormEvent) => {
     e.preventDefault();
-    confetti({
-      particleCount: 70,
-      spread: 60,
-      origin: { y: 0.6 }
-    });
-    setToastMessage('Personalized Learning Plan successfully generated!');
+    if (!questionText.trim()) return;
+
+    const userQ = questionText.trim();
+    setChatLog((prev) => [...prev, { sender: 'user', text: userQ }]);
+    setQuestionText('');
+
     setTimeout(() => {
-      setToastMessage(null);
-      onNavigate('curator_ai');
-    }, 1200);
+      setChatLog((prev) => [
+        ...prev,
+        {
+          sender: 'mentor',
+          text: `Great question about "${userQ}". In quantum mechanics, state vectors remain in linear combination until measurement causes wavefunction projection onto one of the eigenbases. Review Day 2 section 4 for the mathematical derivation!`,
+        },
+      ]);
+    }, 800);
   };
 
   return (
-    <div className="bg-background text-on-background h-full font-body-md text-body-md overflow-x-hidden antialiased flex min-h-screen">
-      
+    <div className="bg-background text-on-background font-body-md min-h-screen pt-20 md:pl-64 pb-24 md:pb-0 relative flex flex-col">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-6 right-6 z-50 bg-primary text-on-primary px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-2 animate-fade-in-up">
@@ -40,334 +74,462 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         </div>
       )}
 
-      {/* SideNavBar */}
-      <nav className="bg-surface-muted border-r border-outline-variant docked left-0 h-full w-64 hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md z-40">
-        <div className="mb-stack-lg flex items-center gap-3 px-2 cursor-pointer" onClick={() => onNavigate('landing')}>
-          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-            <img 
-              alt="EduCurate Mentor Logo" 
-              className="w-full h-full object-cover" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_7hYpmxO4RPVjHquhRUHn9AGWYmElz5-DH-YSWT689k42d7CaFU5kpRf2pBGfbowcUQAN-mUfunCdo08cupvoBATMWMdsuIS_zfqwQfWP1b6k8QyA6pdF-EBRr9KWVbIuLr-JkXRbieM1w9PUU7CP4EM_1VM3JoKYX95x_8fX_x2wotv1EZF8F57EMFzXW2h3LTVja3KN3WcLwWex1on2mybh63q4GIHbc9lxJYPyhxpXX6wvZGvw"
-            />
-          </div>
-          <div>
-            <h1 className="text-headline-md font-headline-md font-bold text-primary tracking-tight leading-tight">EduCurate</h1>
-            <p className="text-caption font-caption text-on-surface-variant">Your Digital Mentor</p>
-          </div>
+      {/* TopNavBar (Header + Desktop User Actions) */}
+      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-10 h-16 max-w-container-max mx-auto bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant shadow-sm dark:shadow-none transition-all">
+        <div className="md:hidden flex items-center cursor-pointer" onClick={() => onNavigate('landing')}>
+          <span className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduCurate</span>
         </div>
-
-        <ul className="flex flex-col gap-1 flex-1">
-          <li>
-            <button 
-              onClick={() => onNavigate('landing')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-left cursor-pointer border-none bg-transparent"
-            >
-              <span className="material-symbols-outlined" data-icon="home">home</span>
-              <span className="text-label-md font-label-md">Home</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              onClick={() => onNavigate('curator_ai')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold bg-primary-container/10 translate-x-1 transition-transform shadow-sm border border-primary/10 text-left cursor-pointer"
-            >
-              <span className="material-symbols-outlined" data-icon="psychology_alt" style={{ fontVariationSettings: "'FILL' 1" }}>psychology_alt</span>
-              <span className="text-label-md font-label-md">AI Guide</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              onClick={() => onNavigate('learning_plan')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-left cursor-pointer border-none bg-transparent"
-            >
-              <span className="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
-              <span className="text-label-md font-label-md">Learning Paths</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              onClick={() => onNavigate('aspirators')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-left cursor-pointer border-none bg-transparent"
-            >
-              <span className="material-symbols-outlined" data-icon="explore">explore</span>
-              <span className="text-label-md font-label-md">Discovery</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              onClick={() => onNavigate('parent_dashboard')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all text-left cursor-pointer border-none bg-transparent"
-            >
-              <span className="material-symbols-outlined" data-icon="settings">settings</span>
-              <span className="text-label-md font-label-md">Settings</span>
-            </button>
-          </li>
-        </ul>
-
-        <div className="mt-auto">
+        <nav className="hidden md:flex gap-6 items-center">
           <button 
-            onClick={() => onNavigate('curator_ai')}
-            className="w-full py-3 px-4 bg-primary text-on-primary rounded-lg text-label-md font-label-md hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer border-none"
+            onClick={() => onNavigate('landing')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
           >
-            <span className="material-symbols-outlined">add</span>
-            Start New Lesson
+            Dashboard
           </button>
-        </div>
-      </nav>
-
-      {/* Main Content Area */}
-      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
-        
-        {/* TopNavBar (Mobile Only) */}
-        <header className="md:hidden bg-surface-container-lowest border-b border-outline-variant px-margin-mobile h-16 flex items-center justify-between sticky top-0 z-30">
-          <h1 className="text-headline-md font-headline-md font-bold text-primary cursor-pointer" onClick={() => onNavigate('landing')}>EduCurate</h1>
+          <button 
+            onClick={() => onNavigate('aspirators')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
+          >
+            Discovery
+          </button>
+          <button 
+            onClick={() => onNavigate('learning_plan')}
+            className="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 text-label-md font-label-md scale-95 transition-transform duration-150 font-bold bg-transparent cursor-pointer"
+          >
+            My Library
+          </button>
+        </nav>
+        <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('parent_dashboard')}
-            className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer border-none bg-transparent p-0"
+            className="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors cursor-pointer border-none shadow-sm"
+          >
+            Parent Portal
+          </button>
+          <div 
+            onClick={() => onNavigate('parent_dashboard')}
+            className="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden hidden md:block cursor-pointer"
           >
             <img 
               alt="Student profile avatar" 
               className="w-full h-full object-cover" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf6CXddibvXAVRe-7SgqIT8t-otAqPF9UzmPtbdGfEI56Qoj4XOz34vTMmxgLCrqN9n8slbI8hFChz-C_8h-VEd2hKGIphta02o3UpAQN5DdEvdwERVaqFtZRHMGYUj2b5HoMsqxXxQ5jM7x8nMLqgM9ks0BuFY8oLi6gABUGKNW6CjpQSpeh6Tt1vmmZXY1VDK6S5tXpQ_9DIqRawsuK1jdUrhkUWON63GuydLz75tLhnydUdbAjL"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpTaBJlTwHV0024TVqGEHTGGcVag1UVmwRlA1RI5EKsL3oAwQU_kyferKzDpxENUt0Lz-QJWurYknvzsbnhRgrANThUAIVltH8wscx44gzqgFBdtYWiH7VvV2YQam2Gy4LoyYjL6J_sM6ikRJRicgugB2SkVvslwgw5Jv2sKc4mcRB1cCy-zrIcM5kLC6qD7lLauUOdJAzeZ2s7ZUcJJpGE5mOSU8RMoZBEgGIiKBNgnNK1Ivj6G5K" 
             />
+          </div>
+        </div>
+      </header>
+
+      {/* SideNavBar (Desktop) */}
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md z-40 bg-surface-muted dark:bg-adult-ed border-r border-outline-variant w-64 pt-20">
+        <div className="mb-stack-lg flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('landing')}>
+          <div className="w-12 h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+          </div>
+          <div>
+            <h2 className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim leading-none">EduCurate</h2>
+            <p className="text-caption font-caption text-on-surface-variant mt-1">Your Digital Mentor</p>
+          </div>
+        </div>
+        <nav className="flex-1 flex flex-col gap-1">
+          <button 
+            onClick={() => onNavigate('landing')}
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">home</span>
+            <span className="text-label-md font-label-md">Home</span>
           </button>
+          <button 
+            onClick={() => onNavigate('curator_ai')}
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">psychology_alt</span>
+            <span className="text-label-md font-label-md">AI Guide</span>
+          </button>
+          {/* Active State */}
+          <button 
+            onClick={() => onNavigate('learning_plan')}
+            className="flex items-center gap-3 p-3 text-primary dark:text-primary-fixed-dim font-bold bg-primary-container/10 rounded-lg translate-x-1 transition-transform group text-left cursor-pointer border border-primary/20 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
+            <span className="text-label-md font-label-md">Learning Paths</span>
+          </button>
+          <button 
+            onClick={() => onNavigate('aspirators')}
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">explore</span>
+            <span className="text-label-md font-label-md">Discovery</span>
+          </button>
+          <button 
+            onClick={() => onNavigate('parent_dashboard')}
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group mt-auto text-left cursor-pointer border-none bg-transparent"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">settings</span>
+            <span className="text-label-md font-label-md">Settings</span>
+          </button>
+        </nav>
+        <div className="mt-stack-lg">
+          <button 
+            onClick={() => onNavigate('curator_ai')}
+            className="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm cursor-pointer border-none flex items-center justify-center gap-2 font-bold"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+            Start New Lesson
+          </button>
+        </div>
+      </aside>
+
+      {/* BottomNavBar (Mobile) */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest dark:bg-inverse-surface shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl border-t border-outline-variant">
+        <button 
+          onClick={() => onNavigate('landing')}
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+        >
+          <span className="material-symbols-outlined mb-1">home</span>
+          <span className="text-[10px] font-semibold">Home</span>
+        </button>
+        <button 
+          onClick={() => onNavigate('curator_ai')}
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+        >
+          <span className="material-symbols-outlined mb-1">chat_bubble</span>
+          <span className="text-[10px] font-semibold">Guide</span>
+        </button>
+        <button 
+          onClick={() => onNavigate('aspirators')}
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+        >
+          <span className="material-symbols-outlined mb-1">search</span>
+          <span className="text-[10px] font-semibold">Explore</span>
+        </button>
+        {/* Active */}
+        <button 
+          onClick={() => onNavigate('learning_plan')}
+          className="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-1 scale-90 transition-transform duration-200 border-none"
+        >
+          <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
+          <span className="text-[10px] font-semibold">Library</span>
+        </button>
+      </nav>
+
+      {/* Main Canvas */}
+      <main className="max-w-container-max mx-auto px-4 md:px-10 py-stack-lg flex-1 w-full">
+        
+        {/* Header Section */}
+        <header className="mb-stack-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-stack-md">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-surface-variant text-primary px-3 py-1 rounded-full text-caption font-caption font-bold">Active Plan</span>
+              <span className="text-on-surface-variant text-caption font-caption">Estimated 14 Days</span>
+            </div>
+            <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2 font-bold tracking-tight">
+              Introduction to Quantum Computing
+            </h1>
+            <p className="text-body-md font-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+              A curated, multi-day curriculum designed to take you from foundational physics concepts to understanding basic quantum algorithms.
+            </p>
+          </div>
+          <div className="flex gap-3 w-full md:w-auto">
+            <button 
+              onClick={() => {
+                triggerToast('Difficulty adjusted: Adaptive pacing enabled.');
+              }}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors bg-surface-container-lowest font-bold cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-sm">tune</span>
+              Adjust Difficulty
+            </button>
+            <button 
+              onClick={() => onNavigate('curator_ai')}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm font-bold cursor-pointer border-none"
+            >
+              <span className="material-symbols-outlined text-sm">edit_calendar</span>
+              Customize Plan
+            </button>
+          </div>
         </header>
 
-        {/* Form Content */}
-        <main className="flex-1 p-margin-mobile md:p-margin-desktop max-w-3xl mx-auto w-full py-8 md:py-12">
+        {/* Progress Overview */}
+        <section className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md mb-stack-lg shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-label-md font-label-md text-on-surface font-bold">Overall Progress</h3>
+            <span className="text-label-md font-label-md text-status-progress font-bold">Day 3 of 14</span>
+          </div>
+          <div className="w-full bg-surface-container-high rounded-full h-2.5 mb-2 overflow-hidden">
+            <div className="bg-status-progress h-2.5 rounded-full transition-all duration-700 ease-out" style={{ width: '21%' }}></div>
+          </div>
+          <p className="text-caption font-caption text-on-surface-variant text-right font-medium">21% Complete</p>
+        </section>
+
+        {/* Curriculum Grid (Bento/Card Layout) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
           
-          {/* Top Toggle Tabs */}
-          <div className="mb-stack-lg flex flex-col gap-4">
-            <div className="flex bg-surface-container-high p-1 rounded-xl w-fit">
-              <button 
-                onClick={() => setActiveTab('form')}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-label-md text-label-md transition-all cursor-pointer border-none ${
-                  activeTab === 'form' 
-                    ? 'bg-surface-container-lowest text-primary shadow-sm' 
-                    : 'text-on-surface-variant hover:bg-surface-container bg-transparent'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[20px]">assignment</span>
-                Step-by-Step Form
-              </button>
-              <button 
-                onClick={() => onNavigate('curator_ai')}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-label-md text-label-md transition-all cursor-pointer border-none ${
-                  activeTab === 'chat' 
-                    ? 'bg-surface-container-lowest text-primary shadow-sm' 
-                    : 'text-on-surface-variant hover:bg-surface-container bg-transparent'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[20px]">forum</span>
-                Talk to AI Mentor
-              </button>
-            </div>
-            <div className="h-[1px] bg-outline-variant w-full"></div>
-          </div>
-
-          {/* Title Header */}
-          <div className="mb-stack-lg">
-            <h2 className="text-headline-lg font-headline-lg text-on-surface mb-2">Create Learning Plan</h2>
-            <p className="text-body-md font-body-md text-on-surface-variant">Provide a few details to generate a structured, personalized curriculum.</p>
-          </div>
-
-          {/* Progress Indicator */}
-          <div className="mb-stack-lg">
-            <div className="flex justify-between text-label-md font-label-md text-on-surface-variant mb-2 px-1">
-              <span className="text-primary font-bold">Demographics</span>
-              <span>Interests</span>
-              <span>Schedule</span>
-            </div>
-            <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden flex gap-1">
-              <div className="h-full w-1/3 bg-status-progress rounded-full"></div>
-              <div className="h-full w-1/3 bg-transparent rounded-full"></div>
-              <div className="h-full w-1/3 bg-transparent rounded-full"></div>
-            </div>
-          </div>
-
-          {/* Form */}
-          <form 
-            onSubmit={handleGeneratePlan}
-            className="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg shadow-sm flex flex-col gap-stack-md"
-          >
-            {/* Age Group */}
-            <div className="flex flex-col gap-2">
-              <label className="text-label-md font-label-md text-on-surface">Target Audience / Age Group</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
-                <label className="cursor-pointer" onClick={() => setAgeGroup('early_childhood')}>
-                  <input 
-                    checked={ageGroup === 'early_childhood'} 
-                    onChange={() => setAgeGroup('early_childhood')}
-                    className="peer sr-only" 
-                    name="age_group" 
-                    type="radio"
-                  />
-                  <div className="p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-container/10 peer-checked:ring-1 peer-checked:ring-primary transition-all hover:bg-surface-container flex items-center justify-between">
-                    <span className="text-body-md font-body-md text-on-surface">Early Childhood</span>
-                    <span className="material-symbols-outlined text-primary hidden peer-checked:block" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+          {/* Left Column: The Timeline (Days) */}
+          <div className="lg:col-span-8 flex flex-col gap-stack-lg">
+            
+            {/* Day 3 (Current Day) */}
+            <article className="relative">
+              {/* Timeline Connector */}
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md ring-4 ring-background shadow-sm">
+                    3
                   </div>
-                </label>
-
-                <label className="cursor-pointer" onClick={() => setAgeGroup('primary')}>
-                  <input 
-                    checked={ageGroup === 'primary'} 
-                    onChange={() => setAgeGroup('primary')}
-                    className="peer sr-only" 
-                    name="age_group" 
-                    type="radio"
-                  />
-                  <div className="p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-container/10 peer-checked:ring-1 peer-checked:ring-primary transition-all hover:bg-surface-container flex items-center justify-between">
-                    <span className="text-body-md font-body-md text-on-surface">Primary Education</span>
-                    <span className="material-symbols-outlined text-primary hidden peer-checked:block" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  </div>
-                </label>
-
-                <label className="cursor-pointer" onClick={() => setAgeGroup('teen')}>
-                  <input 
-                    checked={ageGroup === 'teen'} 
-                    onChange={() => setAgeGroup('teen')}
-                    className="peer sr-only" 
-                    name="age_group" 
-                    type="radio"
-                  />
-                  <div className="p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-container/10 peer-checked:ring-1 peer-checked:ring-primary transition-all hover:bg-surface-container flex items-center justify-between">
-                    <span className="text-body-md font-body-md text-on-surface">Teenagers (Secondary)</span>
-                    <span className="material-symbols-outlined text-primary hidden peer-checked:block" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  </div>
-                </label>
-
-                <label className="cursor-pointer" onClick={() => setAgeGroup('adult')}>
-                  <input 
-                    checked={ageGroup === 'adult'} 
-                    onChange={() => setAgeGroup('adult')}
-                    className="peer sr-only" 
-                    name="age_group" 
-                    type="radio"
-                  />
-                  <div className="p-3 border border-outline-variant rounded-lg peer-checked:border-primary peer-checked:bg-primary-container/10 peer-checked:ring-1 peer-checked:ring-primary transition-all hover:bg-surface-container flex items-center justify-between">
-                    <span className="text-body-md font-body-md text-on-surface">University & Beyond</span>
-                    <span className="material-symbols-outlined text-primary hidden peer-checked:block" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  </div>
-                </label>
-
-              </div>
-            </div>
-
-            {/* Topic of Interest */}
-            <div className="flex flex-col gap-2">
-              <label className="text-label-md font-label-md text-on-surface" htmlFor="topic">Primary Topic of Interest</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                <input 
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface-muted focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-body-md font-body-md text-on-surface placeholder:text-outline" 
-                  id="topic" 
-                  placeholder="e.g., Quantum Physics, Renaissance Art, Python Programming" 
-                  type="text"
-                />
-              </div>
-            </div>
-
-            {/* Proficiency Level */}
-            <div className="flex flex-col gap-2">
-              <label className="text-label-md font-label-md text-on-surface">Current Proficiency Level</label>
-              <div className="flex bg-surface-muted rounded-lg p-1 border border-outline-variant">
-                
-                <label className="flex-1 text-center cursor-pointer" onClick={() => setProficiency('beginner')}>
-                  <input 
-                    checked={proficiency === 'beginner'} 
-                    onChange={() => setProficiency('beginner')}
-                    className="peer sr-only" 
-                    name="proficiency" 
-                    type="radio"
-                  />
-                  <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all">
-                    Beginner
-                  </div>
-                </label>
-
-                <label className="flex-1 text-center cursor-pointer" onClick={() => setProficiency('intermediate')}>
-                  <input 
-                    checked={proficiency === 'intermediate'} 
-                    onChange={() => setProficiency('intermediate')}
-                    className="peer sr-only" 
-                    name="proficiency" 
-                    type="radio"
-                  />
-                  <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all">
-                    Intermediate
-                  </div>
-                </label>
-
-                <label className="flex-1 text-center cursor-pointer" onClick={() => setProficiency('advanced')}>
-                  <input 
-                    checked={proficiency === 'advanced'} 
-                    onChange={() => setProficiency('advanced')}
-                    className="peer sr-only" 
-                    name="proficiency" 
-                    type="radio"
-                  />
-                  <div className="py-2 rounded-md peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:text-primary font-label-md text-label-md text-on-surface-variant transition-all">
-                    Advanced
-                  </div>
-                </label>
-
-              </div>
-            </div>
-
-            {/* Learning Duration & Effort */}
-            <div className="flex flex-col gap-2">
-              <label className="text-label-md font-label-md text-on-surface">Learning Commitment</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                <div className="flex flex-col gap-1">
-                  <span className="text-caption font-caption text-on-surface-variant">Duration</span>
-                  <select 
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    className="w-full p-3 rounded-lg border border-outline-variant bg-surface-muted focus:ring-2 focus:ring-primary focus:border-primary outline-none text-body-md font-body-md text-on-surface appearance-none"
-                  >
-                    <option value="7 Days">7 Days</option>
-                    <option value="14 Days">14 Days</option>
-                    <option value="30 Days">30 Days</option>
-                    <option value="60 Days">60 Days</option>
-                  </select>
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-bold">Superposition &amp; Interference</h2>
+                  <span className="bg-surface-container-highest text-primary-fixed-variant px-2.5 py-0.5 rounded-md text-caption font-caption ml-auto md:ml-0 border border-outline-variant font-bold">Today</span>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <span className="text-caption font-caption text-on-surface-variant">Daily Effort</span>
-                  <select 
-                    value={dailyEffort}
-                    onChange={(e) => setDailyEffort(e.target.value)}
-                    className="w-full p-3 rounded-lg border border-outline-variant bg-surface-muted focus:ring-2 focus:ring-primary focus:border-primary outline-none text-body-md font-body-md text-on-surface appearance-none"
-                  >
-                    <option value="15 mins/day">15 mins/day</option>
-                    <option value="30 mins/day">30 mins/day</option>
-                    <option value="1 hour/day">1 hour/day</option>
-                    <option value="2+ hours/day">2+ hours/day</option>
-                  </select>
+                <div className="ml-0 md:ml-12 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+                  
+                  {/* Video Resource */}
+                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden">
+                      <img 
+                        alt="Video thumbnail" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIASuLi85eel74J2Ws5GLg8vSDwBkyf11e-5xaod0AZIMVPcJKsWkbzdgAyXFIUB58864ffmtWXxqtzM79jb_JrzkCCL0WnmWuWQriAlOzKRWuKxDvbLx8SiFSZ9Ch8DX1sVrWnqAO9_0zLrwgqD_LaYByYNPxmcsIGkkTpx-NcdKJhTfukX0qK3jaAlzLOYHtNejQbvC30x5R-dnIgG0WV4DlwQzJb10MCUGRvsE56InVvP5wGgc"
+                      />
+                      <div className="absolute top-2 right-2 bg-primary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="material-symbols-outlined text-[12px]">play_circle</span> Video
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-on-surface/80 text-white px-2 py-0.5 rounded text-caption font-caption backdrop-blur-sm">
+                        14:20
+                      </div>
+                    </div>
+                    <div className="p-stack-md flex-1 flex flex-col">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">Visualizing Superposition in Qubits</h3>
+                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">QuantumRealm Channel</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
+                        An intuitive visual guide to how states overlap before measurement, avoiding heavy math in favor of clear geometric models.
+                      </p>
+                      <button 
+                        onClick={handleMarkVideoComplete}
+                        className={`mt-auto w-full py-2.5 border rounded-lg transition-colors flex items-center justify-center gap-2 text-label-md font-label-md cursor-pointer font-semibold ${
+                          videoCompleted 
+                            ? 'bg-status-complete/10 text-status-complete border-status-complete' 
+                            : 'border-outline-variant text-primary hover:bg-surface-container-low'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-sm" style={videoCompleted ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                          {videoCompleted ? 'verified' : 'check_circle'}
+                        </span>
+                        {videoCompleted ? 'Completed' : 'Mark Complete'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Book Resource */}
+                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center">
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary-ed to-transparent"></div>
+                      <img 
+                        alt="Book cover" 
+                        className="h-32 w-auto shadow-md group-hover:-translate-y-2 transition-transform duration-500 z-10 rounded-sm" 
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuyYVka8NukNXrxDO9-hWmMpIF63NNqKlXOOr3J1GOxs396TDaq6kbQhTqUN7SPaL0KSk24E16fiNFtMnShbQ_nT1l0oI9zLomZOYhfysesBI7dlJML64aj6YuKy0p1h0cGx5iksN7LsiQ1HBrN21WF3LSeERGSYRujgshcplH1QspQLx_0fX-Ll2guwO5mmYW1fM7QwL1v33gXY1bwNjubSCRuecLL02MHhW16zGisbiGR2q_H1Qn"
+                      />
+                      <div className="absolute top-2 right-2 bg-secondary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm z-20">
+                        <span className="material-symbols-outlined text-[12px]">menu_book</span> Book
+                      </div>
+                    </div>
+                    <div className="p-stack-md flex-1 flex flex-col">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">Quantum Computing since Democritus</h3>
+                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">Scott Aaronson • Chapter 9</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
+                        Deep dive into the philosophical and mathematical implications of interference patterns.
+                      </p>
+                      <button 
+                        onClick={handleStartReading}
+                        className="mt-auto w-full py-2.5 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none"
+                      >
+                        <span className="material-symbols-outlined text-sm">menu_book</span>
+                        {readingStarted ? 'Continue Reading' : 'Start Reading'}
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
-
               </div>
-            </div>
+            </article>
 
-            {/* Submit Button */}
-            <div className="pt-stack-md mt-stack-sm border-t border-outline-variant flex justify-end">
+            {/* Day 4 (Upcoming) */}
+            <article className="relative opacity-80 hover:opacity-100 transition-opacity">
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
+                    4
+                  </div>
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">Entanglement Basics</h2>
+                  <span className="text-caption font-caption text-on-surface-variant ml-auto md:ml-0 font-medium">Est. 1h 15m</span>
+                </div>
+                <div className="ml-0 md:ml-12 bg-surface-muted border border-outline-variant border-dashed rounded-xl p-stack-md flex items-center justify-between">
+                  <div className="flex items-center gap-stack-md">
+                    <div className="flex -space-x-2">
+                      <div className="w-8 h-8 rounded-full bg-primary-ed/20 border border-primary-ed flex items-center justify-center z-10">
+                        <span className="material-symbols-outlined text-primary-ed text-sm">play_circle</span>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-secondary-ed/20 border border-secondary-ed flex items-center justify-center z-0">
+                        <span className="material-symbols-outlined text-secondary-ed text-sm">menu_book</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-label-md font-label-md text-on-surface font-bold">2 Resources Planned</p>
+                      <p className="text-caption font-caption text-on-surface-variant">Video &amp; Reading Assignment</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => triggerToast('Previewing Day 4: Bell States & EPR Paradox modules loaded.')}
+                    className="text-primary font-label-md text-label-md hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-none font-bold"
+                  >
+                    Preview <span className="material-symbols-outlined text-sm">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            {/* Day 5 (Upcoming) */}
+            <article className="relative opacity-60">
+              <div className="relative z-10">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
+                    5
+                  </div>
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">Quantum Gates &amp; Circuit Synthesis</h2>
+                </div>
+              </div>
+            </article>
+
+          </div>
+
+          {/* Right Column: Context & Mentor */}
+          <div className="lg:col-span-4 flex flex-col gap-stack-lg">
+            
+            {/* AI Mentor Sticky Card */}
+            <div className="sticky top-24 bg-surface-container-low border border-primary-fixed-dim/30 rounded-2xl p-stack-md shadow-sm overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+              
+              <div className="flex items-center gap-3 mb-stack-md relative z-10">
+                <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+                  <span className="material-symbols-outlined">psychology</span>
+                </div>
+                <div>
+                  <h3 className="text-label-md font-label-md text-on-surface font-bold">Mentor Insight</h3>
+                  <p className="text-caption font-caption text-on-surface-variant">AI Assistant</p>
+                </div>
+              </div>
+
+              <div className="bg-surface-container-lowest rounded-xl p-stack-md border border-outline-variant shadow-sm relative z-10 mb-stack-md">
+                <p className="text-body-md font-body-md text-on-surface text-sm italic leading-relaxed">
+                  "Before diving into today's video, make sure you're comfortable with the concept of complex numbers from Day 2. The visualization relies heavily on phase differences."
+                </p>
+              </div>
+
               <button 
-                type="submit" 
-                className="px-6 py-3 bg-primary text-on-primary rounded-lg text-label-md font-label-md hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 cursor-pointer border-none"
+                onClick={() => setMentorModalOpen(true)}
+                className="w-full py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-primary hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 text-label-md font-label-md relative z-10 cursor-pointer font-bold shadow-sm"
               >
-                <span className="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
-                Generate My Plan
+                <span className="material-symbols-outlined text-sm">chat</span>
+                Ask a Question
               </button>
             </div>
 
-          </form>
-        </main>
+            {/* Plan Stats / Tags */}
+            <div className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md">
+              <h3 className="text-label-md font-label-md text-on-surface mb-stack-sm font-bold">Curriculum Focus</h3>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">Physics</span>
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">Math Intensive</span>
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">Theoretical</span>
+              </div>
+            </div>
 
-      </div>
+          </div>
+
+        </div>
+
+      </main>
+
+      {/* AI Mentor Quick Modal */}
+      {mentorModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg p-6 border border-outline-variant shadow-2xl flex flex-col max-h-[80vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-outline-variant">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+                  <span className="material-symbols-outlined text-sm">psychology</span>
+                </div>
+                <h3 className="text-headline-md font-bold text-on-surface text-lg">Curator Mentor Assistant</h3>
+              </div>
+              <button 
+                onClick={() => setMentorModalOpen(false)}
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer border-none bg-transparent"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4 space-y-3">
+              {chatLog.map((c, i) => (
+                <div 
+                  key={i} 
+                  className={`flex gap-2 ${c.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`p-3 rounded-xl max-w-[85%] text-sm ${
+                    c.sender === 'user' 
+                      ? 'bg-primary text-on-primary rounded-br-none' 
+                      : 'bg-surface-container border border-outline-variant text-on-surface rounded-bl-none'
+                  }`}>
+                    {c.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleSendQuestion} className="flex gap-2 pt-3 border-t border-outline-variant">
+              <input 
+                type="text" 
+                value={questionText}
+                onChange={(e) => setQuestionText(e.target.value)}
+                placeholder="Ask about Day 3 quantum concepts..."
+                className="flex-1 px-4 py-2 border border-outline-variant rounded-xl bg-surface-muted text-on-surface text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <button 
+                type="submit"
+                className="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-sm hover:bg-primary-container transition-colors cursor-pointer border-none"
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="w-full py-stack-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface-container-high dark:bg-adult-ed border-t border-outline-variant md:ml-0 mb-16 md:mb-0 mt-12">
+        <div className="text-headline-md font-headline-md font-bold text-on-surface mb-4 md:mb-0">
+          EduCurate
+        </div>
+        <div className="flex flex-wrap justify-center gap-6 mb-4 md:mb-0">
+          <button onClick={() => onNavigate('parent_dashboard')} className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer">
+            Privacy Policy
+          </button>
+          <button onClick={() => onNavigate('parent_dashboard')} className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer">
+            Terms of Service
+          </button>
+          <button onClick={() => onNavigate('curator_ai')} className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer">
+            Contact Support
+          </button>
+          <button onClick={() => onNavigate('landing')} className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer">
+            About Us
+          </button>
+        </div>
+        <div className="text-caption font-caption text-on-surface-variant text-center md:text-right">
+          © 2024 EduCurate Learning Platform. Curated Clarity for every learner.
+        </div>
+      </footer>
+
     </div>
   );
 };
