@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { AppView } from '../types';
+import { DisqusComments } from './DisqusComments';
 
 interface LandingPageProps {
   onNavigate: (view: AppView) => void;
@@ -518,6 +519,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </ul>
           </div>
 
+        </section>
+
+        {/* Community Feedback & Discussions Powered by Disqus */}
+        <section id="community-discussions" className="py-12 relative z-10 animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="text-center space-y-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                <span className="material-symbols-outlined text-sm">forum</span> Community Forum
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold text-on-surface">Portal Feedback &amp; Student Community</h2>
+              <p className="text-sm text-on-surface-variant max-w-xl mx-auto">
+                Join the conversation! Leave feedback, share curriculum ideas, or connect with fellow learners across Singapore and beyond.
+              </p>
+            </div>
+
+            <DisqusComments 
+              pageIdentifier="PORTAL FEEDBACK AND STUDENT COMMUNITY"
+              pageTitle="PORTAL FEEDBACK AND STUDENT COMMUNITY"
+              pageUrl="https://educurate-vy74.vercel.app/"
+            />
+          </div>
         </section>
 
       </main>
