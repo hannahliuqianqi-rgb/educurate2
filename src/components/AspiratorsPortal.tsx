@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AppView } from '../types';
+import { DisqusComments } from './DisqusComments';
 import confetti from 'canvas-confetti';
 
 interface AspiratorsPortalProps {
@@ -387,63 +388,12 @@ export const AspiratorsPortal: React.FC<AspiratorsPortalProps> = ({ onNavigate }
             </span>
           </div>
 
-          {/* Interactive Community Comment Box */}
-          <div className="bg-surface-container-low rounded-[24px] p-stack-md md:p-stack-lg border border-outline-variant shadow-sm space-y-6">
-            
-            {/* New Comment Input */}
-            <form onSubmit={handlePostComment} className="flex gap-3 items-start">
-              <img 
-                className="w-10 h-10 rounded-full object-cover border border-outline-variant"
-                alt="Avatar"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuALH4lMQsn4vYJk079fD9AXrLslwWzvrlJdQOJ3qiELbUxHY4-q8tLDQfgnk_f2BSxkN_HYR8Fw_lFnfW2WNRFeIEF6BKWdyu9dhRmWqBp_D9PdQ1O9QG3jAfANCh_Y5M8kxB78yJ6PfmDSxNKiGeMc1oUyvL0Xu59Iiae5eMoR4UP2103FfmT0RVY-XsJSXw_fqpVyxmHi2ckRuXOX-w6ZARJEg6P4VXbggxPjJimDh0eTxQvc8epm"
-              />
-              <div className="flex-1 space-y-2">
-                <textarea 
-                  value={newCommentText}
-                  onChange={(e) => setNewCommentText(e.target.value)}
-                  placeholder="Share your discovery insights or suggest next quests to explore..."
-                  rows={2}
-                  className="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-body-md resize-none shadow-inner"
-                />
-                <div className="flex justify-end">
-                  <button 
-                    type="submit"
-                    className="bg-primary text-on-primary font-label-md px-5 py-2 rounded-xl hover:bg-surface-tint transition-all cursor-pointer border-none font-bold shadow-sm"
-                  >
-                    Post Feedback
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            {/* Comment Thread List */}
-            <div className="space-y-4 pt-4 border-t border-outline-variant/60">
-              {comments.map((c) => (
-                <div key={c.id} className="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/80 flex gap-3.5 shadow-sm">
-                  <img src={c.avatar} alt={c.author} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-on-surface text-label-md">{c.author}</span>
-                      <span className="text-caption text-on-surface-variant font-medium">{c.time}</span>
-                    </div>
-                    <p className="text-body-md text-on-surface-variant mb-2">{c.text}</p>
-                    <div className="flex items-center gap-4 text-caption text-on-surface-variant">
-                      <button 
-                        onClick={() => {
-                          setComments(comments.map(item => item.id === c.id ? { ...item, likes: item.likes + 1 } : item));
-                        }}
-                        className="hover:text-primary flex items-center gap-1 font-semibold cursor-pointer border-none bg-transparent"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">thumb_up</span>
-                        {c.likes} Likes
-                      </button>
-                      <button className="hover:text-primary font-semibold cursor-pointer border-none bg-transparent">Reply</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
+          {/* Interactive Community Comment Box via Disqus */}
+          <div className="space-y-6">
+            <DisqusComments 
+              pageIdentifier="educurate-aspirators-portal"
+              pageTitle="EduCurate Aspirators Discovery Community"
+            />
           </div>
         </section>
 

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { AppView } from '../types';
 import { JuniorMentorModal } from './JuniorMentorModal';
+import { DisqusComments } from './DisqusComments';
 import confetti from 'canvas-confetti';
 
 interface JuniorDashboardProps {
@@ -347,32 +348,11 @@ export const JuniorDashboard: React.FC<JuniorDashboardProps> = ({ onNavigate }) 
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 border-2 border-dashed border-[#c3c6d6] flex flex-col items-center justify-center text-center space-y-3">
-            <MessageSquare className="w-10 h-10 text-[#c3c6d6]" />
-            <div>
-              <p className="text-base sm:text-lg text-[#434654] font-bold">
-                Disqus Comments & Parent Community
-              </p>
-              <p className="text-xs sm:text-sm text-[#737685] mt-0.5">
-                Share milestones, voice recordings, and curriculum feedback with educators!
-              </p>
-            </div>
-
-            {/* Rendered Live Comments */}
-            <div className="w-full max-w-xl text-left mt-3 space-y-3">
-              {comments.map((c) => (
-                <div key={c.id} className="p-3.5 rounded-xl bg-[#f8f9ff] border border-[#eff4ff] text-xs space-y-1">
-                  <div className="flex items-center justify-between text-[#003594] font-bold">
-                    <span className="flex items-center gap-1.5">
-                      <span>{c.avatar}</span>
-                      <span>{c.author}</span>
-                    </span>
-                    <span className="text-[10px] text-[#737685] font-normal">{c.time}</span>
-                  </div>
-                  <p className="text-[#434654] text-xs">{c.text}</p>
-                </div>
-              ))}
-            </div>
+          <div className="space-y-4">
+            <DisqusComments 
+              pageIdentifier="educurate-junior-portal"
+              pageTitle="EduCurate Junior - Leo's Dashboard Community"
+            />
           </div>
         </section>
 
