@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppView } from '../types';
 import confetti from 'canvas-confetti';
 
@@ -29,6 +29,7 @@ interface GoogleBookItem {
 }
 
 export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNavigate }) => {
+  const [completedDays, setCompletedDays] = useState<number[]>([1, 2]);
   const [activeDay, setActiveDay] = useState<number>(3);
   const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
   const [readingStarted, setReadingStarted] = useState<boolean>(false);
@@ -76,7 +77,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleFetchRecommendations = async (customQuery?: string) => {
@@ -85,6 +86,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
     setIsSearching(true);
     try {
+      // Parallel fetch to backend YouTube search & Google Books endpoints
       const [youtubeRes, booksRes] = await Promise.all([
         fetch(`/api/youtube/search?q=${encodeURIComponent(q)}&maxResults=6`),
         fetch(`/api/books/volumes?q=${encodeURIComponent(q)}&maxResults=6`),
@@ -137,9 +139,9 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         }
       }
 
-      triggerToast(`Loaded recommendations for "${q}"!`);
+      triggerToast(`Loaded Google API recommendations for "${q}"!`);
     } catch (err) {
-      console.error('Error fetching recommendations:', err);
+      console.error('Error fetching Google API recommendations:', err);
       triggerToast('Connected to fallback recommendations.');
     } finally {
       setIsSearching(false);
@@ -149,9 +151,9 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
   const handleAddToPathway = (type: 'video' | 'book', item: any) => {
     setCustomPathwayItems((prev) => [...prev, { type, item }]);
     confetti({
-      particleCount: 45,
-      spread: 55,
-      origin: { y: 0.75 },
+      particleCount: 40,
+      spread: 50,
+      origin: { y: 0.8 },
     });
     triggerToast(`Added "${item.title}" to Day ${activeDay} curriculum!`);
   };
@@ -194,38 +196,38 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
   };
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen pt-20 md:pl-64 pb-24 md:pb-0 relative flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="bg-background text-on-background font-body-md min-h-screen pt-20 md:pl-64 pb-24 md:pb-0 relative flex flex-col">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 bg-blue-600 text-white px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-2 border border-blue-400/40 animate-fade-in-up">
-          <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+        <div className="fixed top-6 right-6 z-50 bg-primary text-on-primary px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-2 animate-fade-in-up">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             check_circle
           </span>
-          <span className="text-sm">{toastMessage}</span>
+          <span>{toastMessage}</span>
         </div>
       )}
 
       {/* TopNavBar (Header + Desktop User Actions) */}
-      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-10 h-16 max-w-7xl mx-auto bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-lg">
+      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-10 h-16 max-w-container-max mx-auto bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant shadow-sm dark:shadow-none transition-all">
         <div className="md:hidden flex items-center cursor-pointer" onClick={() => onNavigate('landing')}>
-          <span className="text-xl font-bold text-white tracking-tight font-['Outfit']">EduCurate</span>
+          <span className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduCurate</span>
         </div>
         <nav className="hidden md:flex gap-6 items-center">
           <button
             onClick={() => onNavigate('landing')}
-            className="text-slate-300 hover:text-white transition-colors text-sm font-semibold bg-transparent border-none cursor-pointer"
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
           >
             Dashboard
           </button>
           <button
             onClick={() => onNavigate('aspirators')}
-            className="text-slate-300 hover:text-white transition-colors text-sm font-semibold bg-transparent border-none cursor-pointer"
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
           >
             Discovery
           </button>
           <button
             onClick={() => onNavigate('learning_plan')}
-            className="text-blue-400 border-b-2 border-blue-400 pb-1 text-sm font-bold scale-95 transition-transform bg-transparent cursor-pointer"
+            className="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 text-label-md font-label-md scale-95 transition-transform duration-150 font-bold bg-transparent cursor-pointer"
           >
             My Library
           </button>
@@ -233,13 +235,13 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer border-none shadow-md"
+            className="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors cursor-pointer border-none shadow-sm"
           >
             Parent Portal
           </button>
           <div
             onClick={() => onNavigate('parent_dashboard')}
-            className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden hidden md:block cursor-pointer"
+            className="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden hidden md:block cursor-pointer"
           >
             <img
               alt="Student profile avatar"
@@ -251,62 +253,62 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       </header>
 
       {/* SideNavBar (Desktop) */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full p-5 z-40 bg-slate-900/95 backdrop-blur-md border-r border-slate-800 w-64 pt-20">
-        <div className="mb-8 flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('landing')}>
-          <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
-            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md z-40 bg-surface-muted dark:bg-adult-ed border-r border-outline-variant w-64 pt-20">
+        <div className="mb-stack-lg flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('landing')}>
+          <div className="w-12 h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               psychology
             </span>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white font-['Outfit'] leading-none">EduCurate</h2>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Your Digital Mentor</p>
+            <h2 className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim leading-none">EduCurate</h2>
+            <p className="text-caption font-caption text-on-surface-variant mt-1">Your Digital Mentor</p>
           </div>
         </div>
-        <nav className="flex-1 flex flex-col gap-1.5">
+        <nav className="flex-1 flex flex-col gap-1">
           <button
             onClick={() => onNavigate('landing')}
-            className="flex items-center gap-3 p-3 text-slate-300 hover:text-white hover:bg-slate-800 transition-all rounded-xl group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
-            <span className="material-symbols-outlined text-xl group-hover:text-blue-400 transition-colors">home</span>
-            <span className="text-sm font-semibold">Home</span>
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">home</span>
+            <span className="text-label-md font-label-md">Home</span>
           </button>
           <button
             onClick={() => onNavigate('curator_ai')}
-            className="flex items-center gap-3 p-3 text-slate-300 hover:text-white hover:bg-slate-800 transition-all rounded-xl group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
-            <span className="material-symbols-outlined text-xl group-hover:text-blue-400 transition-colors">psychology_alt</span>
-            <span className="text-sm font-semibold">AI Guide</span>
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">psychology_alt</span>
+            <span className="text-label-md font-label-md">AI Guide</span>
           </button>
           {/* Active State */}
           <button
             onClick={() => onNavigate('learning_plan')}
-            className="flex items-center gap-3 p-3 text-blue-400 font-bold bg-blue-600/15 border border-blue-500/30 rounded-xl translate-x-1 transition-transform group text-left cursor-pointer shadow-sm"
+            className="flex items-center gap-3 p-3 text-primary dark:text-primary-fixed-dim font-bold bg-primary-container/10 rounded-lg translate-x-1 transition-transform group text-left cursor-pointer border border-primary/20 shadow-sm"
           >
             <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
               auto_stories
             </span>
-            <span className="text-sm font-bold">Learning Paths</span>
+            <span className="text-label-md font-label-md">Learning Paths</span>
           </button>
           <button
             onClick={() => onNavigate('aspirators')}
-            className="flex items-center gap-3 p-3 text-slate-300 hover:text-white hover:bg-slate-800 transition-all rounded-xl group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
-            <span className="material-symbols-outlined text-xl group-hover:text-blue-400 transition-colors">explore</span>
-            <span className="text-sm font-semibold">Discovery</span>
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">explore</span>
+            <span className="text-label-md font-label-md">Discovery</span>
           </button>
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="flex items-center gap-3 p-3 text-slate-300 hover:text-white hover:bg-slate-800 transition-all rounded-xl group mt-auto text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group mt-auto text-left cursor-pointer border-none bg-transparent"
           >
-            <span className="material-symbols-outlined text-xl group-hover:text-blue-400 transition-colors">settings</span>
-            <span className="text-sm font-semibold">Settings</span>
+            <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">settings</span>
+            <span className="text-label-md font-label-md">Settings</span>
           </button>
         </nav>
-        <div className="mt-8">
+        <div className="mt-stack-lg">
           <button
             onClick={() => onNavigate('curator_ai')}
-            className="w-full bg-blue-600 text-white text-sm font-bold py-3 rounded-xl hover:bg-blue-500 transition-colors shadow-md cursor-pointer border-none flex items-center justify-center gap-2"
+            className="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm cursor-pointer border-none flex items-center justify-center gap-2 font-bold"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Start New Lesson
@@ -315,72 +317,71 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       </aside>
 
       {/* BottomNavBar (Mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-slate-900 border-t border-slate-800 shadow-2xl">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest dark:bg-inverse-surface shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl border-t border-outline-variant">
         <button
           onClick={() => onNavigate('landing')}
-          className="flex flex-col items-center justify-center text-slate-400 hover:text-white px-4 py-1 rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
         >
-          <span className="material-symbols-outlined mb-1 text-lg">home</span>
+          <span className="material-symbols-outlined mb-1">home</span>
           <span className="text-[10px] font-semibold">Home</span>
         </button>
         <button
           onClick={() => onNavigate('curator_ai')}
-          className="flex flex-col items-center justify-center text-slate-400 hover:text-white px-4 py-1 rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
         >
-          <span className="material-symbols-outlined mb-1 text-lg">chat_bubble</span>
+          <span className="material-symbols-outlined mb-1">chat_bubble</span>
           <span className="text-[10px] font-semibold">Guide</span>
         </button>
         <button
           onClick={() => onNavigate('aspirators')}
-          className="flex flex-col items-center justify-center text-slate-400 hover:text-white px-4 py-1 rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
         >
-          <span className="material-symbols-outlined mb-1 text-lg">search</span>
+          <span className="material-symbols-outlined mb-1">search</span>
           <span className="text-[10px] font-semibold">Explore</span>
         </button>
         {/* Active */}
         <button
           onClick={() => onNavigate('learning_plan')}
-          className="flex flex-col items-center justify-center bg-blue-600 text-white rounded-xl px-4 py-1 scale-95 transition-transform border-none"
+          className="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-1 scale-90 transition-transform duration-200 border-none"
         >
-          <span className="material-symbols-outlined mb-1 text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+          <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>
             local_library
           </span>
-          <span className="text-[10px] font-bold">Library</span>
+          <span className="text-[10px] font-semibold">Library</span>
         </button>
       </nav>
 
       {/* Main Canvas */}
-      <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 flex-1 w-full space-y-8">
-        
+      <main className="max-w-container-max mx-auto px-4 md:px-10 py-stack-lg flex-1 w-full space-y-8">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-slate-900/60 p-6 md:p-8 rounded-2xl border border-slate-800 shadow-xl">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-stack-md">
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-surface-variant text-primary px-3 py-1 rounded-full text-caption font-caption font-bold">
                 Active Plan
               </span>
-              <span className="text-slate-400 text-xs font-medium">Estimated 14 Days • Intermediate Level</span>
+              <span className="text-on-surface-variant text-caption font-caption">Estimated 14 Days</span>
             </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
+            <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2 font-bold tracking-tight">
               Introduction to Quantum Computing
             </h1>
-            <p className="text-slate-300 text-sm md:text-base max-w-2xl leading-relaxed">
-              A curated, multi-day curriculum designed to take you from foundational physics concepts to understanding basic quantum algorithms and circuit gates.
+            <p className="text-body-md font-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+              A curated, multi-day curriculum designed to take you from foundational physics concepts to understanding basic quantum algorithms.
             </p>
           </div>
-          <div className="flex gap-3 w-full md:w-auto shrink-0">
+          <div className="flex gap-3 w-full md:w-auto">
             <button
               onClick={() => {
                 triggerToast('Difficulty adjusted: Adaptive pacing enabled.');
               }}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors bg-slate-900 cursor-pointer shadow-sm"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors bg-surface-container-lowest font-bold cursor-pointer"
             >
               <span className="material-symbols-outlined text-sm">tune</span>
               Adjust Difficulty
             </button>
             <button
               onClick={() => onNavigate('curator_ai')}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors shadow-md cursor-pointer border-none"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm font-bold cursor-pointer border-none"
             >
               <span className="material-symbols-outlined text-sm">edit_calendar</span>
               Customize Plan
@@ -389,49 +390,45 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         </header>
 
         {/* Progress Overview */}
-        <section className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-md">
+        <section className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md shadow-sm">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-bold text-white">Overall Progress</h3>
-            <span className="text-sm font-bold text-blue-400">Day 3 of 14</span>
+            <h3 className="text-label-md font-label-md text-on-surface font-bold">Overall Progress</h3>
+            <span className="text-label-md font-label-md text-status-progress font-bold">Day 3 of 14</span>
           </div>
-          <div className="w-full bg-slate-800 rounded-full h-3 mb-2 overflow-hidden border border-slate-700/50">
+          <div className="w-full bg-surface-container-high rounded-full h-2.5 mb-2 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-700 ease-out"
+              className="bg-status-progress h-2.5 rounded-full transition-all duration-700 ease-out"
               style={{ width: '21%' }}
             ></div>
           </div>
-          <p className="text-xs font-semibold text-slate-400 text-right">21% Complete • 11 Days Remaining</p>
+          <p className="text-caption font-caption text-on-surface-variant text-right font-medium">21% Complete</p>
         </section>
 
         {/* ========================================================================= */}
-        {/* Google API Search & Recommendation Engine (Crystal-Clear High Contrast) */}
+        {/* NEW: Interactive Google API Search & Recommendation Engine */}
         {/* ========================================================================= */}
-        <section className="bg-slate-900 border border-blue-500/30 rounded-2xl p-5 md:p-7 shadow-2xl space-y-5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
+        <section className="bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-primary/20 rounded-2xl p-5 md:p-7 shadow-md space-y-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="bg-blue-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                  <span className="material-symbols-outlined text-[14px]">bolt</span> Live Google API Search
+                <span className="bg-primary text-on-primary text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">bolt</span> Google API Live Search
                 </span>
-                <span className="text-xs font-bold text-blue-400">YouTube Masterclasses &amp; Google Books</span>
+                <span className="text-xs font-semibold text-primary">YouTube Videos &amp; Google Books Volumes</span>
               </div>
-              <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-                Search &amp; Recommend Learning Resources
-              </h2>
-              <p className="text-xs md:text-sm text-slate-300 leading-relaxed max-w-3xl">
-                Query live Google Books volumes and YouTube educational lectures to instantly discover curated chapters, video tutorials, and add them directly to your personalized pathway.
+              <h2 className="text-xl md:text-2xl font-bold text-on-surface">Search &amp; Recommend Learning Resources</h2>
+              <p className="text-xs md:text-sm text-on-surface-variant">
+                Query the live Google Books and YouTube API to instantly discover video masterclasses, textbook chapters, and add them directly to your custom pathway.
               </p>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 shrink-0">
+            <div className="flex items-center gap-1.5 bg-surface-muted p-1 rounded-xl border border-outline-variant shrink-0">
               <button
                 type="button"
                 onClick={() => setSearchFilter('all')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
-                  searchFilter === 'all'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+                  searchFilter === 'all' ? 'bg-primary text-on-primary shadow-sm' : 'bg-transparent text-on-surface-variant'
                 }`}
               >
                 All Resources
@@ -439,10 +436,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setSearchFilter('videos')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 ${
-                  searchFilter === 'videos'
-                    ? 'bg-blue-500 text-white shadow-sm'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1 ${
+                  searchFilter === 'videos' ? 'bg-primary-ed text-white shadow-sm' : 'bg-transparent text-on-surface-variant'
                 }`}
               >
                 <span className="material-symbols-outlined text-[14px]">play_circle</span> Videos
@@ -450,10 +445,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               <button
                 type="button"
                 onClick={() => setSearchFilter('books')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 ${
-                  searchFilter === 'books'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1 ${
+                  searchFilter === 'books' ? 'bg-secondary-ed text-white shadow-sm' : 'bg-transparent text-on-surface-variant'
                 }`}
               >
                 <span className="material-symbols-outlined text-[14px]">menu_book</span> Books
@@ -467,24 +460,24 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               e.preventDefault();
               handleFetchRecommendations();
             }}
-            className="flex flex-col sm:flex-row gap-3"
+            className="flex flex-col sm:flex-row gap-2.5"
           >
             <div className="relative flex-1">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">
                 search
               </span>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search topics (e.g. Quantum Superposition, Linear Algebra, Machine Learning)..."
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-medium"
+                placeholder="Search any subject (e.g. Quantum Superposition, Linear Algebra, Machine Learning)..."
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-inner"
               />
             </div>
             <button
               type="submit"
               disabled={isSearching}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer border-none shrink-0 disabled:opacity-50"
+              className="bg-primary hover:bg-primary-container text-on-primary font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer border-none shrink-0 disabled:opacity-50"
             >
               {isSearching ? (
                 <>
@@ -500,9 +493,9 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             </button>
           </form>
 
-          {/* Preset Quick Chips with High Contrast */}
+          {/* Preset Quick Chips */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
+            <span className="text-xs font-semibold text-on-surface-variant flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">tune</span> Popular Topics:
             </span>
             {[
@@ -520,7 +513,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   setSearchQuery(chip);
                   handleFetchRecommendations(chip);
                 }}
-                className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-200 rounded-full border border-slate-700 transition-colors cursor-pointer font-semibold"
+                className="text-xs px-3 py-1 bg-surface-container-high hover:bg-primary-container/20 text-on-surface rounded-full border border-outline-variant transition-colors cursor-pointer"
               >
                 {chip}
               </button>
@@ -528,39 +521,37 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
           </div>
 
           {/* Results Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
             {/* Render YouTube Videos */}
             {(searchFilter === 'all' || searchFilter === 'videos') &&
               recommendedVideos.map((video) => (
                 <div
                   key={video.id}
-                  className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="relative h-40 bg-slate-900 overflow-hidden">
+                    <div className="relative h-36 bg-surface-container-high overflow-hidden">
                       <img
                         src={video.thumbnail}
                         alt={video.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                      <div className="absolute top-2 right-2 bg-primary-ed text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-[12px]">play_circle</span> YouTube
                       </div>
                       {video.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-0.5 rounded text-[10px] font-bold backdrop-blur-sm">
+                        <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-0.5 rounded text-[10px] font-medium backdrop-blur-sm">
                           {video.duration}
                         </div>
                       )}
                     </div>
-                    <div className="p-4 space-y-2">
-                      <h3 className="font-bold text-sm text-white line-clamp-2 leading-snug">{video.title}</h3>
-                      <p className="text-xs text-blue-400 font-semibold flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>
-                          verified
-                        </span>
+                    <div className="p-4 space-y-1.5">
+                      <h3 className="font-bold text-sm text-on-surface line-clamp-2 leading-snug">{video.title}</h3>
+                      <p className="text-xs text-primary font-semibold flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">verified</span>
                         {video.channelTitle}
                       </p>
-                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{video.description}</p>
+                      <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{video.description}</p>
                     </div>
                   </div>
 
@@ -568,7 +559,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                     <button
                       type="button"
                       onClick={() => handleAddToPathway('video', video)}
-                      className="w-full py-2.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2 bg-surface-container-low hover:bg-primary hover:text-on-primary text-primary border border-primary/20 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-sm">add_task</span>
                       Add to Day {activeDay} Pathway
@@ -582,25 +573,25 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               recommendedBooks.map((book) => (
                 <div
                   key={book.id}
-                  className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="relative h-40 bg-slate-900 overflow-hidden flex items-center justify-center p-3">
+                    <div className="relative h-36 bg-surface-container-high overflow-hidden flex items-center justify-center p-2 bg-gradient-to-t from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
                       <img
                         src={book.thumbnail}
                         alt={book.title}
-                        className="h-32 w-auto object-contain shadow-lg rounded-sm group-hover:scale-105 transition-transform duration-300"
+                        className="h-28 w-auto object-contain shadow-md rounded group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                      <div className="absolute top-2 right-2 bg-secondary-ed text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-[12px]">menu_book</span> Book
                       </div>
                     </div>
-                    <div className="p-4 space-y-2">
-                      <h3 className="font-bold text-sm text-white line-clamp-2 leading-snug">{book.title}</h3>
-                      <p className="text-xs text-purple-300 font-semibold">
+                    <div className="p-4 space-y-1.5">
+                      <h3 className="font-bold text-sm text-on-surface line-clamp-2 leading-snug">{book.title}</h3>
+                      <p className="text-xs text-secondary-ed font-semibold">
                         {book.authors?.join(', ') || 'Various Authors'} • {book.publishedDate}
                       </p>
-                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{book.description}</p>
+                      <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{book.description}</p>
                     </div>
                   </div>
 
@@ -608,7 +599,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                     <button
                       type="button"
                       onClick={() => handleAddToPathway('book', book)}
-                      className="flex-1 py-2.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="flex-1 py-2 bg-surface-container-low hover:bg-secondary-ed hover:text-white text-secondary-ed border border-secondary-ed/20 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-sm">add_task</span>
                       Add to Pathway
@@ -618,7 +609,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                         href={book.infoLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2.5 border border-slate-700 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center justify-center transition-colors"
+                        className="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:text-primary flex items-center justify-center"
                         title="View on Google Books"
                       >
                         <span className="material-symbols-outlined text-sm">open_in_new</span>
@@ -631,98 +622,98 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         </section>
 
         {/* ========================================================================= */}
-        {/* Day Curriculum Timeline & AI Mentor Card */}
+        {/* Day Curriculum Timeline & Context Cards */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Left Column: Timeline */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
-            
-            {/* Day 3 (Active Day) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+          {/* Left Column: The Timeline (Days) */}
+          <div className="lg:col-span-8 flex flex-col gap-stack-lg">
+            {/* Day 3 (Current Day) */}
             <article className="relative">
-              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-slate-800 hidden md:block z-0"></div>
+              {/* Timeline Connector */}
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
 
               <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm ring-4 ring-slate-950 shadow-md">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md ring-4 ring-background shadow-sm">
                     3
                   </div>
-                  <h2 className="text-xl font-bold text-white">
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-bold">
                     Superposition &amp; Interference
                   </h2>
-                  <span className="bg-blue-600/30 text-blue-300 border border-blue-500/40 px-2.5 py-0.5 rounded-md text-xs font-bold ml-auto md:ml-0">
+                  <span className="bg-surface-container-highest text-primary-fixed-variant px-2.5 py-0.5 rounded-md text-caption font-caption ml-auto md:ml-0 border border-outline-variant font-bold">
                     Today
                   </span>
                 </div>
 
-                <div className="ml-0 md:ml-12 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="ml-0 md:ml-12 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                   {/* Video Resource */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
-                    <div className="relative h-40 bg-slate-950 overflow-hidden">
+                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden">
                       <img
                         alt="Video thumbnail"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIASuLi85eel74J2Ws5GLg8vSDwBkyf11e-5xaod0AZIMVPcJKsWkbzdgAyXFIUB58864ffmtWXxqtzM79jb_JrzkCCL0WnmWuWQriAlOzKRWuKxDvbLx8SiFSZ9Ch8DX1sVrWnqAO9_0zLrwgqD_LaYByYNPxmcsIGkkTpx-NcdKJhTfukX0qK3jaAlzLOYHtNejQbvC30x5R-dnIgG0WV4DlwQzJb10MCUGRvsE56InVvP5wGgc"
                       />
-                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                      <div className="absolute top-2 right-2 bg-primary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-[12px]">play_circle</span> Video
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-0.5 rounded text-[10px] font-bold backdrop-blur-sm">
+                      <div className="absolute bottom-2 right-2 bg-on-surface/80 text-white px-2 py-0.5 rounded text-caption font-caption backdrop-blur-sm">
                         14:20
                       </div>
                     </div>
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="text-base font-bold text-white mb-1 line-clamp-2">
+                    <div className="p-stack-md flex-1 flex flex-col">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">
                         Visualizing Superposition in Qubits
                       </h3>
-                      <p className="text-xs text-blue-400 font-semibold mb-3">QuantumRealm Channel</p>
-                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">QuantumRealm Channel</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
                         An intuitive visual guide to how states overlap before measurement, avoiding heavy math in favor of clear geometric models.
                       </p>
                       <button
                         onClick={handleMarkVideoComplete}
-                        className={`mt-auto w-full py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs font-bold cursor-pointer border ${
+                        className={`mt-auto w-full py-2.5 border rounded-lg transition-colors flex items-center justify-center gap-2 text-label-md font-label-md cursor-pointer font-semibold ${
                           videoCompleted
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                            : 'bg-slate-800 text-blue-400 border-slate-700 hover:bg-blue-600 hover:text-white'
+                            ? 'bg-status-complete/10 text-status-complete border-status-complete'
+                            : 'border-outline-variant text-primary hover:bg-surface-container-low'
                         }`}
                       >
                         <span
-                          className="material-symbols-outlined text-base"
+                          className="material-symbols-outlined text-sm"
                           style={videoCompleted ? { fontVariationSettings: "'FILL' 1" } : {}}
                         >
                           {videoCompleted ? 'verified' : 'check_circle'}
                         </span>
-                        {videoCompleted ? 'Completed (+50 XP)' : 'Mark Complete'}
+                        {videoCompleted ? 'Completed' : 'Mark Complete'}
                       </button>
                     </div>
                   </div>
 
                   {/* Book Resource */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-purple-500/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
-                    <div className="relative h-40 bg-slate-950 overflow-hidden flex items-center justify-center p-3">
+                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center">
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary-ed to-transparent"></div>
                       <img
                         alt="Book cover"
-                        className="h-32 w-auto shadow-lg group-hover:-translate-y-1 transition-transform duration-300 rounded-sm"
+                        className="h-32 w-auto shadow-md group-hover:-translate-y-2 transition-transform duration-500 z-10 rounded-sm"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuyYVka8NukNXrxDO9-hWmMpIF63NNqKlXOOr3J1GOxs396TDaq6kbQhTqUN7SPaL0KSk24E16fiNFtMnShbQ_nT1l0oI9zLomZOYhfysesBI7dlJML64aj6YuKy0p1h0cGx5iksN7LsiQ1HBrN21WF3LSeERGSYRujgshcplH1QspQLx_0fX-Ll2guwO5mmYW1fM7QwL1v33gXY1bwNjubSCRuecLL02MHhW16zGisbiGR2q_H1Qn"
                       />
-                      <div className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                      <div className="absolute top-2 right-2 bg-secondary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm z-20">
                         <span className="material-symbols-outlined text-[12px]">menu_book</span> Book
                       </div>
                     </div>
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="text-base font-bold text-white mb-1 line-clamp-2">
+                    <div className="p-stack-md flex-1 flex flex-col">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">
                         Quantum Computing since Democritus
                       </h3>
-                      <p className="text-xs text-purple-300 font-semibold mb-3">Scott Aaronson • Chapter 9</p>
-                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">Scott Aaronson • Chapter 9</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
                         Deep dive into the philosophical and mathematical implications of interference patterns.
                       </p>
                       <button
                         onClick={handleStartReading}
-                        className="mt-auto w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition-colors flex items-center justify-center gap-2 text-xs font-bold shadow-md cursor-pointer border-none"
+                        className="mt-auto w-full py-2.5 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none"
                       >
-                        <span className="material-symbols-outlined text-base">menu_book</span>
+                        <span className="material-symbols-outlined text-sm">menu_book</span>
                         {readingStarted ? 'Continue Reading' : 'Start Reading'}
                       </button>
                     </div>
@@ -732,28 +723,28 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   {customPathwayItems.map((custom, index) => (
                     <div
                       key={index}
-                      className="bg-slate-900 border-2 border-blue-500/50 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between col-span-1 md:col-span-2 animate-fade-in-up"
+                      className="bg-surface-container-lowest border-2 border-primary/40 rounded-xl overflow-hidden shadow-md flex flex-col justify-between col-span-1 animate-fade-in-up"
                     >
-                      <div className="p-5 space-y-2">
+                      <div className="p-4 space-y-2">
                         <div className="flex items-center justify-between">
                           <span
-                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase ${
-                              custom.type === 'video' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
+                            className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                              custom.type === 'video' ? 'bg-primary-ed text-white' : 'bg-secondary-ed text-white'
                             }`}
                           >
-                            {custom.type === 'video' ? 'Added YouTube Video' : 'Added Book Chapter'}
+                            {custom.type === 'video' ? 'API Video' : 'API Book'}
                           </span>
-                          <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">check_circle</span> Added by You
+                          <span className="text-[11px] font-bold text-status-complete flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">check_circle</span> Added by You
                           </span>
                         </div>
-                        <h4 className="font-bold text-base text-white">{custom.item.title}</h4>
-                        <p className="text-xs text-slate-300 leading-relaxed">{custom.item.description}</p>
+                        <h4 className="font-bold text-sm text-on-surface">{custom.item.title}</h4>
+                        <p className="text-xs text-on-surface-variant line-clamp-2">{custom.item.description}</p>
                       </div>
-                      <div className="p-5 pt-0">
+                      <div className="p-4 pt-0">
                         <button
                           onClick={() => triggerToast(`Launching ${custom.item.title}...`)}
-                          className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold cursor-pointer border-none transition-colors"
+                          className="w-full py-2 bg-primary text-on-primary rounded-lg text-xs font-bold cursor-pointer border-none hover:bg-primary-container transition-colors"
                         >
                           Start Study Module
                         </button>
@@ -765,34 +756,34 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             </article>
 
             {/* Day 4 (Upcoming) */}
-            <article className="relative opacity-85 hover:opacity-100 transition-opacity">
-              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-slate-800 hidden md:block z-0"></div>
+            <article className="relative opacity-80 hover:opacity-100 transition-opacity">
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
               <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-700 text-slate-300 flex items-center justify-center font-bold text-sm ring-4 ring-slate-950">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
                     4
                   </div>
-                  <h2 className="text-lg font-bold text-slate-200">Entanglement Basics &amp; Bell States</h2>
-                  <span className="text-xs text-slate-400 font-medium ml-auto md:ml-0">Est. 1h 15m</span>
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">Entanglement Basics</h2>
+                  <span className="text-caption font-caption text-on-surface-variant ml-auto md:ml-0 font-medium">Est. 1h 15m</span>
                 </div>
-                <div className="ml-0 md:ml-12 bg-slate-900 border border-slate-800 border-dashed rounded-2xl p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="ml-0 md:ml-12 bg-surface-muted border border-outline-variant border-dashed rounded-xl p-stack-md flex items-center justify-between">
+                  <div className="flex items-center gap-stack-md">
                     <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500 flex items-center justify-center z-10">
-                        <span className="material-symbols-outlined text-blue-400 text-sm">play_circle</span>
+                      <div className="w-8 h-8 rounded-full bg-primary-ed/20 border border-primary-ed flex items-center justify-center z-10">
+                        <span className="material-symbols-outlined text-primary-ed text-sm">play_circle</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-purple-600/30 border border-purple-500 flex items-center justify-center z-0">
-                        <span className="material-symbols-outlined text-purple-400 text-sm">menu_book</span>
+                      <div className="w-8 h-8 rounded-full bg-secondary-ed/20 border border-secondary-ed flex items-center justify-center z-0">
+                        <span className="material-symbols-outlined text-secondary-ed text-sm">menu_book</span>
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white">2 Resources Planned</p>
-                      <p className="text-xs text-slate-400">Video &amp; Reading Assignment</p>
+                      <p className="text-label-md font-label-md text-on-surface font-bold">2 Resources Planned</p>
+                      <p className="text-caption font-caption text-on-surface-variant">Video &amp; Reading Assignment</p>
                     </div>
                   </div>
                   <button
                     onClick={() => triggerToast('Previewing Day 4: Bell States & EPR Paradox modules loaded.')}
-                    className="text-blue-400 hover:text-blue-300 font-bold text-xs flex items-center gap-1 cursor-pointer bg-transparent border-none"
+                    className="text-primary font-label-md text-label-md hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-none font-bold"
                   >
                     Preview <span className="material-symbols-outlined text-sm">chevron_right</span>
                   </button>
@@ -803,11 +794,11 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             {/* Day 5 (Upcoming) */}
             <article className="relative opacity-60">
               <div className="relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-700 text-slate-400 flex items-center justify-center font-bold text-sm ring-4 ring-slate-950">
+                <div className="flex items-center gap-stack-md mb-stack-sm">
+                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
                     5
                   </div>
-                  <h2 className="text-lg font-bold text-slate-300">
+                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">
                     Quantum Gates &amp; Circuit Synthesis
                   </h2>
                 </div>
@@ -815,75 +806,70 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             </article>
           </div>
 
-          {/* Right Column: AI Mentor Insight & Tags */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            
-            {/* AI Mentor Card */}
-            <div className="sticky top-24 bg-slate-900 border border-blue-500/30 rounded-2xl p-6 shadow-xl space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
-                  <span className="material-symbols-outlined text-xl">psychology</span>
+          {/* Right Column: Context & Mentor */}
+          <div className="lg:col-span-4 flex flex-col gap-stack-lg">
+            {/* AI Mentor Sticky Card */}
+            <div className="sticky top-24 bg-surface-container-low border border-primary-fixed-dim/30 rounded-2xl p-stack-md shadow-sm overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+
+              <div className="flex items-center gap-3 mb-stack-md relative z-10">
+                <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+                  <span className="material-symbols-outlined">psychology</span>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Mentor Insight</h3>
-                  <p className="text-xs text-slate-400">AI Pedagogical Assistant</p>
+                  <h3 className="text-label-md font-label-md text-on-surface font-bold">Mentor Insight</h3>
+                  <p className="text-caption font-caption text-on-surface-variant">AI Assistant</p>
                 </div>
               </div>
 
-              <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 shadow-inner">
-                <p className="text-xs text-slate-200 italic leading-relaxed">
-                  "Before diving into today's video, make sure you're comfortable with the concept of complex numbers from Day 2. Use the live Google API search above if you need supplemental math brush-up videos!"
+              <div className="bg-surface-container-lowest rounded-xl p-stack-md border border-outline-variant shadow-sm relative z-10 mb-stack-md">
+                <p className="text-body-md font-body-md text-on-surface text-sm italic leading-relaxed">
+                  "Before diving into today's video, make sure you're comfortable with the concept of complex numbers from Day 2. Use the Google API search above if you need supplemental math brush-up videos!"
                 </p>
               </div>
 
               <button
                 onClick={() => setMentorModalOpen(true)}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer border-none shadow-md"
+                className="w-full py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-primary hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 text-label-md font-label-md relative z-10 cursor-pointer font-bold shadow-sm"
               >
                 <span className="material-symbols-outlined text-sm">chat</span>
-                Ask Mentor a Question
+                Ask a Question
               </button>
             </div>
 
-            {/* Curriculum Focus Tags */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
-              <h3 className="text-sm font-bold text-white">Curriculum Focus</h3>
+            {/* Plan Stats / Tags */}
+            <div className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md">
+              <h3 className="text-label-md font-label-md text-on-surface mb-stack-sm font-bold">Curriculum Focus</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-xs font-semibold">
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
                   Physics
                 </span>
-                <span className="px-3 py-1 bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-xs font-semibold">
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
                   Math Intensive
                 </span>
-                <span className="px-3 py-1 bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-xs font-semibold">
+                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
                   Theoretical
-                </span>
-                <span className="px-3 py-1 bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-xs font-semibold">
-                  Quantum Gates
                 </span>
               </div>
             </div>
-
           </div>
-
         </div>
-
       </main>
 
       {/* AI Mentor Quick Modal */}
       {mentorModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-2xl w-full max-w-lg p-6 border border-slate-700 shadow-2xl flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg p-6 border border-outline-variant shadow-2xl flex flex-col max-h-[80vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-outline-variant">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
                   <span className="material-symbols-outlined text-sm">psychology</span>
                 </div>
-                <h3 className="text-base font-bold text-white">Curator Mentor Assistant</h3>
+                <h3 className="text-headline-md font-bold text-on-surface text-lg">Curator Mentor Assistant</h3>
               </div>
               <button
                 onClick={() => setMentorModalOpen(false)}
-                className="text-slate-400 hover:text-white cursor-pointer border-none bg-transparent"
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer border-none bg-transparent"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -893,10 +879,10 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               {chatLog.map((c, i) => (
                 <div key={i} className={`flex gap-2 ${c.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`p-3.5 rounded-2xl max-w-[85%] text-xs leading-relaxed ${
+                    className={`p-3 rounded-xl max-w-[85%] text-sm ${
                       c.sender === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-none'
-                        : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-bl-none'
+                        ? 'bg-primary text-on-primary rounded-br-none'
+                        : 'bg-surface-container border border-outline-variant text-on-surface rounded-bl-none'
                     }`}
                   >
                     {c.text}
@@ -905,17 +891,17 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               ))}
             </div>
 
-            <form onSubmit={handleSendQuestion} className="flex gap-2 pt-3 border-t border-slate-800">
+            <form onSubmit={handleSendQuestion} className="flex gap-2 pt-3 border-t border-outline-variant">
               <input
                 type="text"
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
-                placeholder="Ask about Day 3 quantum concepts or materials..."
-                className="flex-1 px-4 py-2.5 border border-slate-700 rounded-xl bg-slate-950 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="Ask about Day 3 quantum concepts..."
+                className="flex-1 px-4 py-2 border border-outline-variant rounded-xl bg-surface-muted text-on-surface text-sm focus:outline-none focus:ring-1 focus:ring-primary"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-500 transition-colors cursor-pointer border-none"
+                className="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-sm hover:bg-primary-container transition-colors cursor-pointer border-none"
               >
                 Send
               </button>
@@ -925,26 +911,36 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       )}
 
       {/* Footer */}
-      <footer className="w-full py-8 px-4 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-950 border-t border-slate-800 mt-12 text-xs text-slate-400">
-        <div className="font-bold text-white font-['Outfit'] text-base">
-          EduCurate
-        </div>
-        <div className="flex flex-wrap justify-center gap-6">
-          <button onClick={() => onNavigate('parent_dashboard')} className="hover:text-white transition-colors bg-transparent border-none cursor-pointer text-slate-400">
+      <footer className="w-full py-stack-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface-container-high dark:bg-adult-ed border-t border-outline-variant md:ml-0 mb-16 md:mb-0 mt-12">
+        <div className="text-headline-md font-headline-md font-bold text-on-surface mb-4 md:mb-0">EduCurate</div>
+        <div className="flex flex-wrap justify-center gap-6 mb-4 md:mb-0">
+          <button
+            onClick={() => onNavigate('parent_dashboard')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+          >
             Privacy Policy
           </button>
-          <button onClick={() => onNavigate('parent_dashboard')} className="hover:text-white transition-colors bg-transparent border-none cursor-pointer text-slate-400">
+          <button
+            onClick={() => onNavigate('parent_dashboard')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+          >
             Terms of Service
           </button>
-          <button onClick={() => onNavigate('curator_ai')} className="hover:text-white transition-colors bg-transparent border-none cursor-pointer text-slate-400">
+          <button
+            onClick={() => onNavigate('curator_ai')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+          >
             Contact Support
           </button>
-          <button onClick={() => onNavigate('landing')} className="hover:text-white transition-colors bg-transparent border-none cursor-pointer text-slate-400">
+          <button
+            onClick={() => onNavigate('landing')}
+            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+          >
             About Us
           </button>
         </div>
-        <div className="text-center md:text-right">
-          © 2026 EduCurate Learning Platform. Curated Clarity for every learner.
+        <div className="text-caption font-caption text-on-surface-variant text-center md:text-right">
+          © 2024 EduCurate Learning Platform. Curated Clarity for every learner.
         </div>
       </footer>
     </div>
