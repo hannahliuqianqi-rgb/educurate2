@@ -265,10 +265,10 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
   };
 
   return (
-    <div className="bg-background text-on-background font-body-md min-h-screen pt-20 md:pl-64 pb-24 md:pb-0 relative flex flex-col">
+    <div className="bg-white text-slate-900 font-body-md min-h-screen pt-20 md:pl-64 pb-24 md:pb-0 relative flex flex-col">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 bg-primary text-on-primary px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-2 animate-fade-in-up">
+        <div className="fixed top-6 right-6 z-50 bg-primary text-white px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-2 animate-fade-in-up">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             check_circle
           </span>
@@ -277,26 +277,26 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       )}
 
       {/* TopNavBar (Header + Desktop User Actions) */}
-      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-10 h-16 max-w-container-max mx-auto bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant shadow-sm dark:shadow-none transition-all">
+      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-10 h-16 max-w-container-max mx-auto bg-white border-b border-slate-200 shadow-sm transition-all">
         <div className="md:hidden flex items-center cursor-pointer" onClick={() => onNavigate('landing')}>
-          <span className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduCurate</span>
+          <span className="text-headline-md font-headline-md font-bold text-primary">EduCurate</span>
         </div>
         <nav className="hidden md:flex gap-6 items-center">
           <button
             onClick={() => onNavigate('landing')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
           >
             Dashboard
           </button>
           <button
             onClick={() => onNavigate('aspirators')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary transition-colors text-label-md font-label-md bg-transparent border-none cursor-pointer"
           >
             Discovery
           </button>
           <button
             onClick={() => onNavigate('learning_plan')}
-            className="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 text-label-md font-label-md scale-95 transition-transform duration-150 font-bold bg-transparent cursor-pointer"
+            className="text-primary border-b-2 border-primary pb-1 text-label-md font-label-md scale-95 transition-transform duration-150 font-bold bg-transparent cursor-pointer"
           >
             My Library
           </button>
@@ -304,13 +304,13 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors cursor-pointer border-none shadow-sm"
+            className="bg-primary text-white font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary-container transition-colors cursor-pointer border-none shadow-sm font-semibold"
           >
             Parent Portal
           </button>
           <div
             onClick={() => onNavigate('parent_dashboard')}
-            className="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant overflow-hidden hidden md:block cursor-pointer"
+            className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden hidden md:block cursor-pointer"
           >
             <img
               alt="Student profile avatar"
@@ -322,62 +322,62 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       </header>
 
       {/* SideNavBar (Desktop) */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md z-40 bg-surface-muted dark:bg-adult-ed border-r border-outline-variant w-64 pt-20">
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md z-40 bg-slate-50 border-r border-slate-200 w-64 pt-20">
         <div className="mb-stack-lg flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('landing')}>
-          <div className="w-12 h-12 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-primary-container text-white flex items-center justify-center shadow-sm">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               psychology
             </span>
           </div>
           <div>
-            <h2 className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim leading-none">EduCurate</h2>
-            <p className="text-caption font-caption text-on-surface-variant mt-1">Your Digital Mentor</p>
+            <h2 className="text-headline-md font-headline-md font-bold text-primary leading-none">EduCurate</h2>
+            <p className="text-caption font-caption text-slate-500 mt-1">Your Digital Mentor</p>
           </div>
         </div>
         <nav className="flex-1 flex flex-col gap-1">
           <button
             onClick={() => onNavigate('landing')}
-            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
             <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">home</span>
-            <span className="text-label-md font-label-md">Home</span>
+            <span className="text-label-md font-label-md font-medium">Home</span>
           </button>
           <button
             onClick={() => onNavigate('curator_ai')}
-            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
             <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">psychology_alt</span>
-            <span className="text-label-md font-label-md">AI Guide</span>
+            <span className="text-label-md font-label-md font-medium">AI Guide</span>
           </button>
           {/* Active State */}
           <button
             onClick={() => onNavigate('learning_plan')}
-            className="flex items-center gap-3 p-3 text-primary dark:text-primary-fixed-dim font-bold bg-primary-container/10 rounded-lg translate-x-1 transition-transform group text-left cursor-pointer border border-primary/20 shadow-sm"
+            className="flex items-center gap-3 p-3 text-primary font-bold bg-blue-50/80 rounded-lg translate-x-1 transition-transform group text-left cursor-pointer border border-primary/20 shadow-sm"
           >
-            <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span className="material-symbols-outlined text-xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
               auto_stories
             </span>
             <span className="text-label-md font-label-md">Learning Paths</span>
           </button>
           <button
             onClick={() => onNavigate('aspirators')}
-            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all rounded-lg group text-left cursor-pointer border-none bg-transparent"
           >
             <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">explore</span>
-            <span className="text-label-md font-label-md">Discovery</span>
+            <span className="text-label-md font-label-md font-medium">Discovery</span>
           </button>
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="flex items-center gap-3 p-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface transition-all rounded-lg group mt-auto text-left cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-3 p-3 text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 transition-all rounded-lg group mt-auto text-left cursor-pointer border-none bg-transparent"
           >
             <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">settings</span>
-            <span className="text-label-md font-label-md">Settings</span>
+            <span className="text-label-md font-label-md font-medium">Settings</span>
           </button>
         </nav>
         <div className="mt-stack-lg">
           <button
             onClick={() => onNavigate('curator_ai')}
-            className="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm cursor-pointer border-none flex items-center justify-center gap-2 font-bold"
+            className="w-full bg-primary text-white font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm cursor-pointer border-none flex items-center justify-center gap-2 font-bold"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Start New Lesson
@@ -386,24 +386,24 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       </aside>
 
       {/* BottomNavBar (Mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface-container-lowest dark:bg-inverse-surface shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl border-t border-outline-variant">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-xl border-t border-slate-200">
         <button
           onClick={() => onNavigate('landing')}
-          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-slate-600 px-4 py-1 active:bg-slate-100 rounded-lg transition-colors bg-transparent border-none"
         >
           <span className="material-symbols-outlined mb-1">home</span>
           <span className="text-[10px] font-semibold">Home</span>
         </button>
         <button
           onClick={() => onNavigate('curator_ai')}
-          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-slate-600 px-4 py-1 active:bg-slate-100 rounded-lg transition-colors bg-transparent border-none"
         >
           <span className="material-symbols-outlined mb-1">chat_bubble</span>
           <span className="text-[10px] font-semibold">Guide</span>
         </button>
         <button
           onClick={() => onNavigate('aspirators')}
-          className="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 active:bg-surface-variant rounded-lg transition-colors bg-transparent border-none"
+          className="flex flex-col items-center justify-center text-slate-600 px-4 py-1 active:bg-slate-100 rounded-lg transition-colors bg-transparent border-none"
         >
           <span className="material-symbols-outlined mb-1">search</span>
           <span className="text-[10px] font-semibold">Explore</span>
@@ -411,7 +411,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         {/* Active */}
         <button
           onClick={() => onNavigate('learning_plan')}
-          className="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-1 scale-90 transition-transform duration-200 border-none"
+          className="flex flex-col items-center justify-center bg-blue-100 text-primary rounded-2xl px-4 py-1 scale-90 transition-transform duration-200 border-none"
         >
           <span className="material-symbols-outlined mb-1" style={{ fontVariationSettings: "'FILL' 1" }}>
             local_library
@@ -421,20 +421,20 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       </nav>
 
       {/* Main Canvas */}
-      <main className="max-w-container-max mx-auto px-4 md:px-10 py-stack-lg flex-1 w-full space-y-8">
+      <main className="max-w-container-max mx-auto px-4 md:px-10 py-stack-lg flex-1 w-full space-y-8 bg-white">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-stack-md">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="bg-surface-variant text-primary px-3 py-1 rounded-full text-caption font-caption font-bold">
+              <span className="bg-blue-100 text-primary px-3 py-1 rounded-full text-caption font-caption font-bold">
                 Active Plan
               </span>
-              <span className="text-on-surface-variant text-caption font-caption">Estimated 14 Days</span>
+              <span className="text-slate-500 text-caption font-caption font-medium">Estimated 14 Days</span>
             </div>
-            <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2 font-bold tracking-tight">
+            <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-slate-900 mb-2 font-bold tracking-tight">
               Introduction to Quantum Computing
             </h1>
-            <p className="text-body-md font-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+            <p className="text-body-md font-body-md text-slate-600 max-w-2xl leading-relaxed">
               A curated, multi-day curriculum designed to take you from foundational physics concepts to understanding basic quantum algorithms.
             </p>
           </div>
@@ -443,14 +443,14 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               onClick={() => {
                 triggerToast('Difficulty adjusted: Adaptive pacing enabled.');
               }}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors bg-surface-container-lowest font-bold cursor-pointer"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-slate-300 text-slate-800 px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-slate-50 transition-colors bg-white font-bold cursor-pointer shadow-sm"
             >
               <span className="material-symbols-outlined text-sm">tune</span>
               Adjust Difficulty
             </button>
             <button
               onClick={() => onNavigate('curator_ai')}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm font-bold cursor-pointer border-none"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm font-bold cursor-pointer border-none"
             >
               <span className="material-symbols-outlined text-sm">edit_calendar</span>
               Customize Plan
@@ -459,45 +459,45 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         </header>
 
         {/* Progress Overview */}
-        <section className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md shadow-sm">
+        <section className="bg-slate-50 border border-slate-200 rounded-xl p-stack-md shadow-sm">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-label-md font-label-md text-on-surface font-bold">Overall Progress</h3>
-            <span className="text-label-md font-label-md text-status-progress font-bold">Day 3 of 14</span>
+            <h3 className="text-label-md font-label-md text-slate-900 font-bold">Overall Progress</h3>
+            <span className="text-label-md font-label-md text-emerald-600 font-bold">Day 3 of 14</span>
           </div>
-          <div className="w-full bg-surface-container-high rounded-full h-2.5 mb-2 overflow-hidden">
+          <div className="w-full bg-slate-200 rounded-full h-2.5 mb-2 overflow-hidden">
             <div
-              className="bg-status-progress h-2.5 rounded-full transition-all duration-700 ease-out"
+              className="bg-emerald-500 h-2.5 rounded-full transition-all duration-700 ease-out"
               style={{ width: '21%' }}
             ></div>
           </div>
-          <p className="text-caption font-caption text-on-surface-variant text-right font-medium">21% Complete</p>
+          <p className="text-caption font-caption text-slate-500 text-right font-semibold">21% Complete</p>
         </section>
 
         {/* ========================================================================= */}
         {/* NEW: Interactive Google API Search & Recommendation Engine */}
         {/* ========================================================================= */}
-        <section className="bg-gradient-to-br from-surface-container-lowest to-surface-container-low border border-primary/20 rounded-2xl p-5 md:p-7 shadow-md space-y-5">
+        <section className="bg-white border border-slate-200 rounded-2xl p-5 md:p-7 shadow-sm space-y-5">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="bg-primary text-on-primary text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
+                <span className="bg-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
                   <span className="material-symbols-outlined text-[14px]">bolt</span> Google API Live Search
                 </span>
                 <span className="text-xs font-semibold text-primary">YouTube Videos &amp; Google Books Volumes</span>
               </div>
-              <h2 className="text-xl md:text-2xl font-bold text-on-surface">Search &amp; Recommend Learning Resources</h2>
-              <p className="text-xs md:text-sm text-on-surface-variant">
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900">Search &amp; Recommend Learning Resources</h2>
+              <p className="text-xs md:text-sm text-slate-600">
                 Query the live Google Books and YouTube API to instantly discover video masterclasses, textbook chapters, and add them directly to your custom pathway.
               </p>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1.5 bg-surface-muted p-1 rounded-xl border border-outline-variant shrink-0">
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
               <button
                 type="button"
                 onClick={() => setSearchFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
-                  searchFilter === 'all' ? 'bg-primary text-on-primary shadow-sm' : 'bg-transparent text-on-surface-variant'
+                  searchFilter === 'all' ? 'bg-primary text-white shadow-sm' : 'bg-transparent text-slate-600'
                 }`}
               >
                 All Resources
@@ -506,7 +506,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 type="button"
                 onClick={() => setSearchFilter('videos')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1 ${
-                  searchFilter === 'videos' ? 'bg-primary-ed text-white shadow-sm' : 'bg-transparent text-on-surface-variant'
+                  searchFilter === 'videos' ? 'bg-red-600 text-white shadow-sm' : 'bg-transparent text-slate-600'
                 }`}
               >
                 <span className="material-symbols-outlined text-[14px]">play_circle</span> Videos
@@ -515,7 +515,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 type="button"
                 onClick={() => setSearchFilter('books')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1 ${
-                  searchFilter === 'books' ? 'bg-secondary-ed text-white shadow-sm' : 'bg-transparent text-on-surface-variant'
+                  searchFilter === 'books' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-slate-600'
                 }`}
               >
                 <span className="material-symbols-outlined text-[14px]">menu_book</span> Books
@@ -532,7 +532,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             className="flex flex-col sm:flex-row gap-2.5"
           >
             <div className="relative flex-1">
-              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
                 search
               </span>
               <input
@@ -540,13 +540,13 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search any subject (e.g. Quantum Superposition, Linear Algebra, Machine Learning)..."
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-inner"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm"
               />
             </div>
             <button
               type="submit"
               disabled={isSearching}
-              className="bg-primary hover:bg-primary-container text-on-primary font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer border-none shrink-0 disabled:opacity-50"
+              className="bg-primary hover:bg-primary-container text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer border-none shrink-0 disabled:opacity-50"
             >
               {isSearching ? (
                 <>
@@ -564,7 +564,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
           {/* Preset Quick Chips */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-xs font-semibold text-on-surface-variant flex items-center gap-1">
+            <span className="text-xs font-semibold text-slate-600 flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">tune</span> Popular Topics:
             </span>
             {[
@@ -582,7 +582,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   setSearchQuery(chip);
                   handleFetchRecommendations(chip);
                 }}
-                className="text-xs px-3 py-1 bg-surface-container-high hover:bg-primary-container/20 text-on-surface rounded-full border border-outline-variant transition-colors cursor-pointer"
+                className="text-xs px-3 py-1 bg-slate-100 hover:bg-blue-50 hover:text-primary text-slate-700 rounded-full border border-slate-200 transition-colors cursor-pointer font-medium"
               >
                 {chip}
               </button>
@@ -596,7 +596,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               recommendedVideos.map((video) => (
                 <div
                   key={video.id}
-                  className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group shadow-sm"
                 >
                   <div>
                     <div className="relative h-40 bg-surface-container-high overflow-hidden">
@@ -686,10 +686,10 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               recommendedBooks.map((book) => (
                 <div
                   key={book.id}
-                  className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group shadow-sm"
                 >
                   <div>
-                    <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center p-2 bg-gradient-to-t from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+                    <div className="relative h-40 bg-slate-100 overflow-hidden flex items-center justify-center p-2">
                       <img
                         src={book.thumbnail}
                         alt={book.title}
@@ -700,11 +700,11 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                       </div>
                     </div>
                     <div className="p-4 space-y-2">
-                      <h3 className="font-bold text-sm text-on-surface line-clamp-2 leading-snug">{book.title}</h3>
-                      <p className="text-xs text-secondary-ed font-semibold">
+                      <h3 className="font-bold text-sm text-slate-900 line-clamp-2 leading-snug">{book.title}</h3>
+                      <p className="text-xs text-blue-700 font-semibold">
                         {book.authors?.join(', ') || 'Various Authors'} • {book.publishedDate}
                       </p>
-                      <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{book.description}</p>
+                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{book.description}</p>
                       
                       {/* Direct Clickable URL Link Badge */}
                       <div className="pt-1">
@@ -712,7 +712,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                           href={book.infoLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-md text-[11px] font-bold transition-colors truncate max-w-full"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md text-[11px] font-bold transition-colors truncate max-w-full"
                           title={book.infoLink}
                         >
                           <span className="material-symbols-outlined text-xs shrink-0">auto_stories</span>
@@ -745,7 +745,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                             description: book.description,
                           })
                         }
-                        className="p-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-on-surface rounded-lg text-xs font-semibold flex items-center justify-center cursor-pointer"
+                        className="p-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 rounded-lg text-xs font-semibold flex items-center justify-center cursor-pointer"
                         title="Read in EduCurate Reader"
                       >
                         <span className="material-symbols-outlined text-base">chrome_reader_mode</span>
@@ -755,7 +755,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                     <button
                       type="button"
                       onClick={() => handleAddToPathway('book', book)}
-                      className="w-full py-2 bg-surface-container-low hover:bg-secondary-ed hover:text-white text-secondary-ed border border-secondary-ed/20 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2 bg-slate-50 hover:bg-blue-600 hover:text-white text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-sm">add_task</span>
                       Add to Pathway
@@ -775,25 +775,25 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             {/* Day 3 (Current Day) */}
             <article className="relative">
               {/* Timeline Connector */}
-              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-slate-200 hidden md:block z-0"></div>
 
               <div className="relative z-10">
                 <div className="flex items-center gap-stack-md mb-stack-sm">
-                  <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md ring-4 ring-background shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-label-md ring-4 ring-white shadow-sm">
                     3
                   </div>
-                  <h2 className="text-headline-md font-headline-md text-on-surface font-bold">
+                  <h2 className="text-headline-md font-headline-md text-slate-900 font-bold">
                     Superposition &amp; Interference
                   </h2>
-                  <span className="bg-surface-container-highest text-primary-fixed-variant px-2.5 py-0.5 rounded-md text-caption font-caption ml-auto md:ml-0 border border-outline-variant font-bold">
+                  <span className="bg-blue-100 text-primary px-2.5 py-0.5 rounded-md text-caption font-caption ml-auto md:ml-0 border border-blue-200 font-bold">
                     Today
                   </span>
                 </div>
 
                 <div className="ml-0 md:ml-12 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                   {/* Video Resource */}
-                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
-                    <div className="relative h-40 bg-surface-container-high overflow-hidden">
+                  <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group flex flex-col shadow-sm">
+                    <div className="relative h-40 bg-slate-100 overflow-hidden">
                       <img
                         alt="Video thumbnail"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -802,16 +802,16 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                       <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-[12px]">play_circle</span> YouTube
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-on-surface/80 text-white px-2 py-0.5 rounded text-caption font-caption backdrop-blur-sm">
+                      <div className="absolute bottom-2 right-2 bg-slate-900/80 text-white px-2 py-0.5 rounded text-caption font-caption backdrop-blur-sm">
                         14:20
                       </div>
                     </div>
                     <div className="p-stack-md flex-1 flex flex-col space-y-2">
-                      <h3 className="text-label-md font-label-md text-on-surface mb-0 line-clamp-2 font-bold">
+                      <h3 className="text-label-md font-label-md text-slate-900 mb-0 line-clamp-2 font-bold">
                         Visualizing Superposition in Qubits
                       </h3>
-                      <p className="text-caption font-caption text-on-surface-variant">3Blue1Brown / Quantum Lab</p>
-                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-2">
+                      <p className="text-caption font-caption text-slate-500">3Blue1Brown / Quantum Lab</p>
+                      <p className="text-body-md font-body-md text-slate-600 text-sm line-clamp-2">
                         An intuitive visual guide to how states overlap before measurement, avoiding heavy math in favor of clear geometric models.
                       </p>
                       
@@ -848,7 +848,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                               description: 'An intuitive visual guide to how states overlap before measurement.',
                             })
                           }
-                          className="p-2 border border-outline-variant bg-surface-container-high rounded-lg text-on-surface hover:bg-surface-container-highest cursor-pointer"
+                          className="p-2 border border-slate-200 bg-slate-100 rounded-lg text-slate-800 hover:bg-slate-200 cursor-pointer"
                           title="Watch in EduCurate"
                         >
                           <span className="material-symbols-outlined text-sm">fit_screen</span>
@@ -859,8 +859,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                         onClick={handleMarkVideoComplete}
                         className={`w-full py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 text-label-md font-label-md cursor-pointer font-semibold mt-auto ${
                           videoCompleted
-                            ? 'bg-status-complete/10 text-status-complete border-status-complete'
-                            : 'border-outline-variant text-primary hover:bg-surface-container-low'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                            : 'border-slate-300 text-primary hover:bg-blue-50'
                         }`}
                       >
                         <span
@@ -875,9 +875,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   </div>
 
                   {/* Book Resource */}
-                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
-                    <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center">
-                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500 to-transparent"></div>
+                  <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group flex flex-col shadow-sm">
+                    <div className="relative h-40 bg-slate-100 overflow-hidden flex items-center justify-center">
                       <img
                         alt="Book cover"
                         className="h-32 w-auto shadow-md group-hover:-translate-y-2 transition-transform duration-500 z-10 rounded-sm"
@@ -888,11 +887,11 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                       </div>
                     </div>
                     <div className="p-stack-md flex-1 flex flex-col space-y-2">
-                      <h3 className="text-label-md font-label-md text-on-surface mb-0 line-clamp-2 font-bold">
+                      <h3 className="text-label-md font-label-md text-slate-900 mb-0 line-clamp-2 font-bold">
                         Quantum Computing since Democritus
                       </h3>
-                      <p className="text-caption font-caption text-on-surface-variant">Scott Aaronson • Cambridge University Press</p>
-                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-2">
+                      <p className="text-caption font-caption text-slate-500">Scott Aaronson • Cambridge University Press</p>
+                      <p className="text-body-md font-body-md text-slate-600 text-sm line-clamp-2">
                         Deep dive into the philosophical and mathematical implications of interference patterns.
                       </p>
 
@@ -921,7 +920,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
                       <button
                         onClick={handleStartReading}
-                        className="w-full py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none mt-auto"
+                        className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none mt-auto"
                       >
                         <span className="material-symbols-outlined text-sm">chrome_reader_mode</span>
                         {readingStarted ? 'Continue in Reader' : 'Open in EduCurate Reader'}
@@ -937,7 +936,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                     return (
                       <div
                         key={index}
-                        className="bg-surface-container-lowest border-2 border-primary/40 rounded-xl overflow-hidden shadow-md flex flex-col justify-between col-span-1 animate-fade-in-up"
+                        className="bg-white border-2 border-primary/40 rounded-xl overflow-hidden shadow-md flex flex-col justify-between col-span-1 animate-fade-in-up"
                       >
                         <div className="p-4 space-y-2">
                           <div className="flex items-center justify-between">
@@ -948,12 +947,12 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                             >
                               {isVideo ? 'YouTube Video' : 'Google Book'}
                             </span>
-                            <span className="text-[11px] font-bold text-status-complete flex items-center gap-1">
+                            <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
                               <span className="material-symbols-outlined text-xs">check_circle</span> Added by You
                             </span>
                           </div>
-                          <h4 className="font-bold text-sm text-on-surface">{custom.item.title}</h4>
-                          <p className="text-xs text-on-surface-variant line-clamp-2">{custom.item.description}</p>
+                          <h4 className="font-bold text-sm text-slate-900">{custom.item.title}</h4>
+                          <p className="text-xs text-slate-600 line-clamp-2">{custom.item.description}</p>
                           
                           {linkUrl && (
                             <a
@@ -973,7 +972,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                               href={linkUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold cursor-pointer border-none hover:bg-primary-container transition-colors text-center no-underline flex items-center justify-center gap-1"
+                              className="flex-1 py-2 bg-primary text-white rounded-lg text-xs font-bold cursor-pointer border-none hover:bg-primary-container transition-colors text-center no-underline flex items-center justify-center gap-1"
                             >
                               <span className="material-symbols-outlined text-xs">launch</span>
                               Open {isVideo ? 'YouTube' : 'Google Book'}
@@ -990,7 +989,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                                 description: custom.item.description,
                               })
                             }
-                            className="p-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high cursor-pointer"
+                            className="p-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer"
                             title="Open in Modal"
                           >
                             <span className="material-symbols-outlined text-sm">fit_screen</span>
@@ -1005,28 +1004,28 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
             {/* Day 4 (Upcoming) */}
             <article className="relative opacity-80 hover:opacity-100 transition-opacity">
-              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-outline-variant hidden md:block z-0"></div>
+              <div className="absolute left-4 top-10 bottom-[-32px] w-0.5 bg-slate-200 hidden md:block z-0"></div>
               <div className="relative z-10">
                 <div className="flex items-center gap-stack-md mb-stack-sm">
-                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-600 flex items-center justify-center font-bold text-label-md ring-4 ring-white">
                     4
                   </div>
-                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">Entanglement Basics</h2>
-                  <span className="text-caption font-caption text-on-surface-variant ml-auto md:ml-0 font-medium">Est. 1h 15m</span>
+                  <h2 className="text-headline-md font-headline-md text-slate-900 font-semibold">Entanglement Basics</h2>
+                  <span className="text-caption font-caption text-slate-500 ml-auto md:ml-0 font-medium">Est. 1h 15m</span>
                 </div>
-                <div className="ml-0 md:ml-12 bg-surface-muted border border-outline-variant border-dashed rounded-xl p-stack-md flex items-center justify-between">
+                <div className="ml-0 md:ml-12 bg-slate-50 border border-slate-200 border-dashed rounded-xl p-stack-md flex items-center justify-between">
                   <div className="flex items-center gap-stack-md">
                     <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center z-10">
+                      <div className="w-8 h-8 rounded-full bg-red-100 border border-red-300 flex items-center justify-center z-10">
                         <span className="material-symbols-outlined text-red-600 text-sm">play_circle</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center z-0">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 flex items-center justify-center z-0">
                         <span className="material-symbols-outlined text-blue-600 text-sm">menu_book</span>
                       </div>
                     </div>
                     <div>
-                      <p className="text-label-md font-label-md text-on-surface font-bold">2 Resources Planned</p>
-                      <p className="text-caption font-caption text-on-surface-variant">Video &amp; Reading Assignment</p>
+                      <p className="text-label-md font-label-md text-slate-900 font-bold">2 Resources Planned</p>
+                      <p className="text-caption font-caption text-slate-500">Video &amp; Reading Assignment</p>
                     </div>
                   </div>
                   <button
@@ -1043,10 +1042,10 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             <article className="relative opacity-60">
               <div className="relative z-10">
                 <div className="flex items-center gap-stack-md mb-stack-sm">
-                  <div className="w-8 h-8 rounded-full bg-surface-container-high border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold text-label-md ring-4 ring-background">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-600 flex items-center justify-center font-bold text-label-md ring-4 ring-white">
                     5
                   </div>
-                  <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">
+                  <h2 className="text-headline-md font-headline-md text-slate-900 font-semibold">
                     Quantum Gates &amp; Circuit Synthesis
                   </h2>
                 </div>
@@ -1057,28 +1056,28 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
           {/* Right Column: Context & Mentor */}
           <div className="lg:col-span-4 flex flex-col gap-stack-lg">
             {/* AI Mentor Sticky Card */}
-            <div className="sticky top-24 bg-surface-container-low border border-primary-fixed-dim/30 rounded-2xl p-stack-md shadow-sm overflow-hidden relative">
+            <div className="sticky top-24 bg-blue-50/70 border border-blue-200 rounded-2xl p-stack-md shadow-sm overflow-hidden relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
 
               <div className="flex items-center gap-3 mb-stack-md relative z-10">
-                <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md">
+                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md">
                   <span className="material-symbols-outlined">psychology</span>
                 </div>
                 <div>
-                  <h3 className="text-label-md font-label-md text-on-surface font-bold">Mentor Insight</h3>
-                  <p className="text-caption font-caption text-on-surface-variant">AI Assistant</p>
+                  <h3 className="text-label-md font-label-md text-slate-900 font-bold">Mentor Insight</h3>
+                  <p className="text-caption font-caption text-slate-500">AI Assistant</p>
                 </div>
               </div>
 
-              <div className="bg-surface-container-lowest rounded-xl p-stack-md border border-outline-variant shadow-sm relative z-10 mb-stack-md">
-                <p className="text-body-md font-body-md text-on-surface text-sm italic leading-relaxed">
+              <div className="bg-white rounded-xl p-stack-md border border-slate-200 shadow-sm relative z-10 mb-stack-md">
+                <p className="text-body-md font-body-md text-slate-800 text-sm italic leading-relaxed">
                   "Before diving into today's video, make sure you're comfortable with the concept of complex numbers from Day 2. Use the Google API search above if you need supplemental math brush-up videos!"
                 </p>
               </div>
 
               <button
                 onClick={() => setMentorModalOpen(true)}
-                className="w-full py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-primary hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 text-label-md font-label-md relative z-10 cursor-pointer font-bold shadow-sm"
+                className="w-full py-2.5 bg-white border border-slate-200 rounded-lg text-primary hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 text-label-md font-label-md relative z-10 cursor-pointer font-bold shadow-sm"
               >
                 <span className="material-symbols-outlined text-sm">chat</span>
                 Ask a Question
@@ -1086,16 +1085,16 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
             </div>
 
             {/* Plan Stats / Tags */}
-            <div className="bg-surface-muted border border-outline-variant rounded-xl p-stack-md">
-              <h3 className="text-label-md font-label-md text-on-surface mb-stack-sm font-bold">Curriculum Focus</h3>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-stack-md">
+              <h3 className="text-label-md font-label-md text-slate-900 mb-stack-sm font-bold">Curriculum Focus</h3>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
+                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-caption font-caption text-slate-700 font-medium shadow-xs">
                   Physics
                 </span>
-                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
+                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-caption font-caption text-slate-700 font-medium shadow-xs">
                   Math Intensive
                 </span>
-                <span className="px-3 py-1 bg-surface-container-high border border-outline-variant rounded-full text-caption font-caption text-on-surface-variant font-medium">
+                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-caption font-caption text-slate-700 font-medium shadow-xs">
                   Theoretical
                 </span>
               </div>
@@ -1107,9 +1106,9 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       {/* In-App Media Viewer Modal (YouTube & Google Books) */}
       {mediaModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-3xl border border-outline-variant shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+          <div className="bg-white rounded-2xl w-full max-w-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <div className="flex items-center gap-3">
                 <span
                   className={`p-2 rounded-lg text-white ${
@@ -1121,8 +1120,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   </span>
                 </span>
                 <div>
-                  <h3 className="font-bold text-base text-on-surface line-clamp-1">{mediaModal.title}</h3>
-                  <p className="text-xs text-on-surface-variant">
+                  <h3 className="font-bold text-base text-slate-900 line-clamp-1">{mediaModal.title}</h3>
+                  <p className="text-xs text-slate-500">
                     {mediaModal.channelOrAuthor || (mediaModal.type === 'video' ? 'YouTube Resource' : 'Google Books Reference')}
                   </p>
                 </div>
@@ -1141,7 +1140,7 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 </a>
                 <button
                   onClick={() => setMediaModal(null)}
-                  className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg cursor-pointer border-none bg-transparent"
+                  className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-200 rounded-lg cursor-pointer border-none bg-transparent"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
@@ -1178,24 +1177,24 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                     )}
                   </div>
                   {mediaModal.description && (
-                    <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
                         Lesson Notes &amp; Summary
                       </h4>
-                      <p className="text-xs text-on-surface leading-relaxed">{mediaModal.description}</p>
+                      <p className="text-xs text-slate-700 leading-relaxed">{mediaModal.description}</p>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant flex flex-col items-center text-center space-y-4">
+                  <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col items-center text-center space-y-4">
                     <span className="material-symbols-outlined text-5xl text-blue-600">chrome_reader_mode</span>
                     <div>
-                      <h4 className="font-bold text-base text-on-surface">{mediaModal.title}</h4>
-                      <p className="text-xs text-on-surface-variant mt-1">{mediaModal.channelOrAuthor}</p>
+                      <h4 className="font-bold text-base text-slate-900">{mediaModal.title}</h4>
+                      <p className="text-xs text-slate-500 mt-1">{mediaModal.channelOrAuthor}</p>
                     </div>
                     {mediaModal.description && (
-                      <p className="text-xs text-on-surface leading-relaxed max-w-xl text-left bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+                      <p className="text-xs text-slate-700 leading-relaxed max-w-xl text-left bg-white p-4 rounded-lg border border-slate-200">
                         {mediaModal.description}
                       </p>
                     )}
@@ -1215,9 +1214,9 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               )}
 
               {/* Direct Link Footer Bar */}
-              <div className="p-3 bg-surface-muted rounded-xl border border-outline-variant flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 truncate text-on-surface-variant">
-                  <span className="font-semibold text-on-surface shrink-0">Direct Link:</span>
+              <div className="p-3 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 truncate text-slate-600">
+                  <span className="font-semibold text-slate-900 shrink-0">Direct Link:</span>
                   <a
                     href={mediaModal.url}
                     target="_blank"
@@ -1244,17 +1243,17 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       {/* AI Mentor Quick Modal */}
       {mentorModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-lg p-6 border border-outline-variant shadow-2xl flex flex-col max-h-[80vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-outline-variant">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 border border-slate-200 shadow-2xl flex flex-col max-h-[80vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
                   <span className="material-symbols-outlined text-sm">psychology</span>
                 </div>
-                <h3 className="text-headline-md font-bold text-on-surface text-lg">Curator Mentor Assistant</h3>
+                <h3 className="text-headline-md font-bold text-slate-900 text-lg">Curator Mentor Assistant</h3>
               </div>
               <button
                 onClick={() => setMentorModalOpen(false)}
-                className="text-on-surface-variant hover:text-on-surface cursor-pointer border-none bg-transparent"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer border-none bg-transparent"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -1266,8 +1265,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   <div
                     className={`p-3 rounded-xl max-w-[85%] text-sm ${
                       c.sender === 'user'
-                        ? 'bg-primary text-on-primary rounded-br-none'
-                        : 'bg-surface-container border border-outline-variant text-on-surface rounded-bl-none'
+                        ? 'bg-primary text-white rounded-br-none font-medium'
+                        : 'bg-slate-100 border border-slate-200 text-slate-800 rounded-bl-none'
                     }`}
                   >
                     {c.text}
@@ -1276,17 +1275,17 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
               ))}
             </div>
 
-            <form onSubmit={handleSendQuestion} className="flex gap-2 pt-3 border-t border-outline-variant">
+            <form onSubmit={handleSendQuestion} className="flex gap-2 pt-3 border-t border-slate-200">
               <input
                 type="text"
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="Ask about Day 3 quantum concepts..."
-                className="flex-1 px-4 py-2 border border-outline-variant rounded-xl bg-surface-muted text-on-surface text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-xl bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-sm hover:bg-primary-container transition-colors cursor-pointer border-none"
+                className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-container transition-colors cursor-pointer border-none"
               >
                 Send
               </button>
@@ -1296,35 +1295,35 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       )}
 
       {/* Footer */}
-      <footer className="w-full py-stack-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface-container-high dark:bg-adult-ed border-t border-outline-variant md:ml-0 mb-16 md:mb-0 mt-12">
-        <div className="text-headline-md font-headline-md font-bold text-on-surface mb-4 md:mb-0">EduCurate</div>
+      <footer className="w-full py-stack-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-slate-50 border-t border-slate-200 md:ml-0 mb-16 md:mb-0 mt-12">
+        <div className="text-headline-md font-headline-md font-bold text-slate-900 mb-4 md:mb-0">EduCurate</div>
         <div className="flex flex-wrap justify-center gap-6 mb-4 md:mb-0">
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
           >
             Privacy Policy
           </button>
           <button
             onClick={() => onNavigate('parent_dashboard')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
           >
             Terms of Service
           </button>
           <button
             onClick={() => onNavigate('curator_ai')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
           >
             Contact Support
           </button>
           <button
             onClick={() => onNavigate('landing')}
-            className="text-on-surface-variant dark:text-surface-variant hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
+            className="text-slate-600 hover:text-primary underline transition-all text-body-md font-body-md bg-transparent border-none cursor-pointer"
           >
             About Us
           </button>
         </div>
-        <div className="text-caption font-caption text-on-surface-variant text-center md:text-right">
+        <div className="text-caption font-caption text-slate-500 text-center md:text-right">
           © 2024 EduCurate Learning Platform. Curated Clarity for every learner.
         </div>
       </footer>
