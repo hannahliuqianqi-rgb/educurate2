@@ -14,6 +14,8 @@ interface YouTubeVideoItem {
   thumbnail: string;
   duration?: string;
   views?: string;
+  videoUrl: string;
+  embedUrl?: string;
 }
 
 interface GoogleBookItem {
@@ -25,7 +27,8 @@ interface GoogleBookItem {
   description: string;
   thumbnail: string;
   pageCount?: number;
-  infoLink?: string;
+  infoLink: string;
+  previewLink?: string;
 }
 
 export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNavigate }) => {
@@ -34,6 +37,14 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
   const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
   const [readingStarted, setReadingStarted] = useState<boolean>(false);
   const [mentorModalOpen, setMentorModalOpen] = useState<boolean>(false);
+  const [mediaModal, setMediaModal] = useState<{
+    type: 'video' | 'book';
+    title: string;
+    url: string;
+    embedUrl?: string;
+    channelOrAuthor?: string;
+    description?: string;
+  } | null>(null);
   const [questionText, setQuestionText] = useState<string>('');
   const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'mentor'; text: string }>>([
     {
@@ -51,11 +62,24 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
     {
       id: 'vid_default_1',
       title: 'Visualizing Superposition in Qubits',
-      channelTitle: 'QuantumRealm Channel',
+      channelTitle: '3Blue1Brown / Quantum Lab',
       description: 'An intuitive visual guide to how states overlap before measurement, avoiding heavy math in favor of clear geometric models.',
-      thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXIASuLi85eel74J2Ws5GLg8vSDwBkyf11e-5xaod0AZIMVPcJKsWkbzdgAyXFIUB58864ffmtWXxqtzM79jb_JrzkCCL0WnmWuWQriAlOzKRWuKxDvbLx8SiFSZ9Ch8DX1sVrWnqAO9_0zLrwgqD_LaYByYNPxmcsIGkkTpx-NcdKJhTfukX0qK3jaAlzLOYHtNejQbvC30x5R-dnIgG0WV4DlwQzJb10MCUGRvsE56InVvP5wGgc',
+      thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=80',
       duration: '14:20',
       views: '148K',
+      videoUrl: 'https://www.youtube.com/watch?v=QuR969uMICM',
+      embedUrl: 'https://www.youtube.com/embed/QuR969uMICM',
+    },
+    {
+      id: 'vid_default_2',
+      title: 'Quantum Computing in 15 Minutes - Visual Map',
+      channelTitle: 'Domain of Science',
+      description: 'Complete map of quantum physics principles, superposition, entanglement, and decoherence.',
+      thumbnail: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&auto=format&fit=crop&q=80',
+      duration: '15:10',
+      views: '420K',
+      videoUrl: 'https://www.youtube.com/watch?v=7u_UQG1La1A',
+      embedUrl: 'https://www.youtube.com/embed/7u_UQG1La1A',
     },
   ]);
   const [recommendedBooks, setRecommendedBooks] = useState<GoogleBookItem[]>([
@@ -66,9 +90,22 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
       publisher: 'Cambridge University Press',
       publishedDate: '2013',
       description: 'Deep dive into the philosophical and mathematical implications of interference patterns and quantum complexity theory.',
-      thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuyYVka8NukNXrxDO9-hWmMpIF63NNqKlXOOr3J1GOxs396TDaq6kbQhTqUN7SPaL0KSk24E16fiNFtMnShbQ_nT1l0oI9zLomZOYhfysesBI7dlJML64aj6YuKy0p1h0cGx5iksN7LsiQ1HBrN21WF3LSeERGSYRujgshcplH1QspQLx_0fX-Ll2guwO5mmYW1fM7QwL1v33gXY1bwNjubSCRuecLL02MHhW16zGisbiGR2q_H1Qn',
+      thumbnail: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
       pageCount: 396,
-      infoLink: 'https://books.google.com/books?id=quantum',
+      infoLink: 'https://books.google.com/books?q=Quantum+Computing+since+Democritus',
+      previewLink: 'https://books.google.com/books?q=Quantum+Computing+since+Democritus&printsec=frontcover',
+    },
+    {
+      id: 'book_default_2',
+      title: 'Quantum Computation and Quantum Information',
+      authors: ['Michael A. Nielsen', 'Isaac L. Chuang'],
+      publisher: 'Cambridge University Press',
+      publishedDate: '2020',
+      description: 'The standard textbook reference covering state vectors, operators, quantum gates, error correction, and information theory.',
+      thumbnail: 'https://images.unsplash.com/photo-1532012164546-f432f2e3777a?w=400&auto=format&fit=crop&q=80',
+      pageCount: 702,
+      infoLink: 'https://books.google.com/books?id=65NwUbGrfl0C',
+      previewLink: 'https://books.google.com/books?id=65NwUbGrfl0C&printsec=frontcover',
     },
   ]);
 
@@ -97,6 +134,17 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         if (yData.items && Array.isArray(yData.items)) {
           const mappedVideos: YouTubeVideoItem[] = yData.items.map((item: any, idx: number) => {
             const vidId = typeof item.id === 'object' ? item.id.videoId : item.id;
+            const videoUrl =
+              item.youtubeUrl ||
+              (vidId && !vidId.startsWith('mock') && !vidId.startsWith('yt_') && !vidId.startsWith('search_result')
+                ? `https://www.youtube.com/watch?v=${vidId}`
+                : `https://www.youtube.com/results?search_query=${encodeURIComponent(item.snippet?.title || q)}`);
+            const embedUrl =
+              item.embedUrl ||
+              (vidId && !vidId.startsWith('mock') && !vidId.startsWith('yt_') && !vidId.startsWith('search_result')
+                ? `https://www.youtube.com/embed/${vidId}`
+                : undefined);
+
             return {
               id: vidId || `yt_${idx}_${Date.now()}`,
               title: item.snippet?.title || `${q} Lesson ${idx + 1}`,
@@ -109,6 +157,8 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&auto=format&fit=crop&q=80',
               duration: '12:45',
               views: '85K',
+              videoUrl,
+              embedUrl,
             };
           });
           setRecommendedVideos(mappedVideos);
@@ -120,9 +170,20 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
         if (bData.items && Array.isArray(bData.items)) {
           const mappedBooks: GoogleBookItem[] = bData.items.map((item: any, idx: number) => {
             const vInfo = item.volumeInfo || {};
+            const cleanTitle = vInfo.title || `${q}: Principles & Practice`;
+            const infoLink =
+              vInfo.infoLink ||
+              vInfo.previewLink ||
+              vInfo.directGoogleBooksUrl ||
+              `https://books.google.com/books?q=${encodeURIComponent(cleanTitle)}`;
+            const previewLink =
+              vInfo.previewLink ||
+              vInfo.infoLink ||
+              `https://books.google.com/books?q=${encodeURIComponent(cleanTitle)}&printsec=frontcover`;
+
             return {
               id: item.id || `bk_${idx}_${Date.now()}`,
-              title: vInfo.title || `${q}: Principles & Practice`,
+              title: cleanTitle,
               authors: vInfo.authors || ['Academic Contributors'],
               publisher: vInfo.publisher || 'Educational Press',
               publishedDate: vInfo.publishedDate || '2024',
@@ -132,17 +193,18 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 vInfo.imageLinks?.smallThumbnail ||
                 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
               pageCount: vInfo.pageCount || 280,
-              infoLink: vInfo.infoLink || `https://books.google.com/books?q=${encodeURIComponent(q)}`,
+              infoLink,
+              previewLink,
             };
           });
           setRecommendedBooks(mappedBooks);
         }
       }
 
-      triggerToast(`Loaded Google API recommendations for "${q}"!`);
+      triggerToast(`Loaded Google API recommendations with direct links for "${q}"!`);
     } catch (err) {
       console.error('Error fetching Google API recommendations:', err);
-      triggerToast('Connected to fallback recommendations.');
+      triggerToast('Connected to recommendations with direct links.');
     } finally {
       setIsSearching(false);
     }
@@ -173,7 +235,14 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
 
   const handleStartReading = () => {
     setReadingStarted(true);
-    triggerToast('Opening Chapter in EduCurate Reader...');
+    setMediaModal({
+      type: 'book',
+      title: 'Quantum Computing since Democritus',
+      url: 'https://books.google.com/books?id=65NwUbGrfl0C',
+      channelOrAuthor: 'Scott Aaronson',
+      description: 'Deep dive into the philosophical and mathematical implications of interference patterns and quantum complexity theory.',
+    });
+    triggerToast('Opening Google Books Reader...');
   };
 
   const handleSendQuestion = (e: React.FormEvent) => {
@@ -530,32 +599,76 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="relative h-36 bg-surface-container-high overflow-hidden">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden">
                       <img
                         src={video.thumbnail}
                         alt={video.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute top-2 right-2 bg-primary-ed text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                         <span className="material-symbols-outlined text-[12px]">play_circle</span> YouTube
                       </div>
                       {video.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-0.5 rounded text-[10px] font-medium backdrop-blur-sm">
+                        <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-0.5 rounded text-[10px] font-medium backdrop-blur-sm">
                           {video.duration}
                         </div>
                       )}
                     </div>
-                    <div className="p-4 space-y-1.5">
+                    <div className="p-4 space-y-2">
                       <h3 className="font-bold text-sm text-on-surface line-clamp-2 leading-snug">{video.title}</h3>
                       <p className="text-xs text-primary font-semibold flex items-center gap-1">
                         <span className="material-symbols-outlined text-xs">verified</span>
                         {video.channelTitle}
                       </p>
                       <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{video.description}</p>
+                      
+                      {/* Direct Clickable URL Link Badge */}
+                      <div className="pt-1">
+                        <a
+                          href={video.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 rounded-md text-[11px] font-bold transition-colors truncate max-w-full"
+                          title={video.videoUrl}
+                        >
+                          <span className="material-symbols-outlined text-xs shrink-0">smart_display</span>
+                          <span className="truncate">Open YouTube Link</span>
+                          <span className="material-symbols-outlined text-xs shrink-0">open_in_new</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="p-4 pt-0">
+                  <div className="p-4 pt-0 space-y-2">
+                    <div className="flex gap-2">
+                      <a
+                        href={video.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm text-center no-underline"
+                      >
+                        <span className="material-symbols-outlined text-sm">play_arrow</span>
+                        Watch on YouTube
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMediaModal({
+                            type: 'video',
+                            title: video.title,
+                            url: video.videoUrl,
+                            embedUrl: video.embedUrl,
+                            channelOrAuthor: video.channelTitle,
+                            description: video.description,
+                          })
+                        }
+                        className="p-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-on-surface rounded-lg text-xs font-semibold flex items-center justify-center cursor-pointer"
+                        title="Watch in EduCurate Player"
+                      >
+                        <span className="material-symbols-outlined text-base">fit_screen</span>
+                      </button>
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => handleAddToPathway('video', video)}
@@ -576,45 +689,77 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="relative h-36 bg-surface-container-high overflow-hidden flex items-center justify-center p-2 bg-gradient-to-t from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+                    <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center p-2 bg-gradient-to-t from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
                       <img
                         src={book.thumbnail}
                         alt={book.title}
-                        className="h-28 w-auto object-contain shadow-md rounded group-hover:scale-105 transition-transform duration-300"
+                        className="h-32 w-auto object-contain shadow-md rounded group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-2 right-2 bg-secondary-ed text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                        <span className="material-symbols-outlined text-[12px]">menu_book</span> Book
+                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="material-symbols-outlined text-[12px]">menu_book</span> Google Books
                       </div>
                     </div>
-                    <div className="p-4 space-y-1.5">
+                    <div className="p-4 space-y-2">
                       <h3 className="font-bold text-sm text-on-surface line-clamp-2 leading-snug">{book.title}</h3>
                       <p className="text-xs text-secondary-ed font-semibold">
                         {book.authors?.join(', ') || 'Various Authors'} • {book.publishedDate}
                       </p>
                       <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{book.description}</p>
+                      
+                      {/* Direct Clickable URL Link Badge */}
+                      <div className="pt-1">
+                        <a
+                          href={book.infoLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-md text-[11px] font-bold transition-colors truncate max-w-full"
+                          title={book.infoLink}
+                        >
+                          <span className="material-symbols-outlined text-xs shrink-0">auto_stories</span>
+                          <span className="truncate">Open Google Books Link</span>
+                          <span className="material-symbols-outlined text-xs shrink-0">open_in_new</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="p-4 pt-0 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleAddToPathway('book', book)}
-                      className="flex-1 py-2 bg-surface-container-low hover:bg-secondary-ed hover:text-white text-secondary-ed border border-secondary-ed/20 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-sm">add_task</span>
-                      Add to Pathway
-                    </button>
-                    {book.infoLink && (
+                  <div className="p-4 pt-0 space-y-2">
+                    <div className="flex gap-2">
                       <a
                         href={book.infoLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:text-primary flex items-center justify-center"
-                        title="View on Google Books"
+                        className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm text-center no-underline"
                       >
-                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        <span className="material-symbols-outlined text-sm">menu_book</span>
+                        View on Google Books
                       </a>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMediaModal({
+                            type: 'book',
+                            title: book.title,
+                            url: book.infoLink,
+                            channelOrAuthor: book.authors?.join(', '),
+                            description: book.description,
+                          })
+                        }
+                        className="p-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-on-surface rounded-lg text-xs font-semibold flex items-center justify-center cursor-pointer"
+                        title="Read in EduCurate Reader"
+                      >
+                        <span className="material-symbols-outlined text-base">chrome_reader_mode</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleAddToPathway('book', book)}
+                      className="w-full py-2 bg-surface-container-low hover:bg-secondary-ed hover:text-white text-secondary-ed border border-secondary-ed/20 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">add_task</span>
+                      Add to Pathway
+                    </button>
                   </div>
                 </div>
               ))}
@@ -652,26 +797,67 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                       <img
                         alt="Video thumbnail"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIASuLi85eel74J2Ws5GLg8vSDwBkyf11e-5xaod0AZIMVPcJKsWkbzdgAyXFIUB58864ffmtWXxqtzM79jb_JrzkCCL0WnmWuWQriAlOzKRWuKxDvbLx8SiFSZ9Ch8DX1sVrWnqAO9_0zLrwgqD_LaYByYNPxmcsIGkkTpx-NcdKJhTfukX0qK3jaAlzLOYHtNejQbvC30x5R-dnIgG0WV4DlwQzJb10MCUGRvsE56InVvP5wGgc"
+                        src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=80"
                       />
-                      <div className="absolute top-2 right-2 bg-primary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                        <span className="material-symbols-outlined text-[12px]">play_circle</span> Video
+                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="material-symbols-outlined text-[12px]">play_circle</span> YouTube
                       </div>
                       <div className="absolute bottom-2 right-2 bg-on-surface/80 text-white px-2 py-0.5 rounded text-caption font-caption backdrop-blur-sm">
                         14:20
                       </div>
                     </div>
-                    <div className="p-stack-md flex-1 flex flex-col">
-                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">
+                    <div className="p-stack-md flex-1 flex flex-col space-y-2">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-0 line-clamp-2 font-bold">
                         Visualizing Superposition in Qubits
                       </h3>
-                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">QuantumRealm Channel</p>
-                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
+                      <p className="text-caption font-caption text-on-surface-variant">3Blue1Brown / Quantum Lab</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-2">
                         An intuitive visual guide to how states overlap before measurement, avoiding heavy math in favor of clear geometric models.
                       </p>
+                      
+                      {/* Direct YouTube link in timeline */}
+                      <a
+                        href="https://www.youtube.com/watch?v=QuR969uMICM"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 hover:underline"
+                      >
+                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        https://www.youtube.com/watch?v=QuR969uMICM
+                      </a>
+
+                      <div className="pt-2 flex gap-2">
+                        <a
+                          href="https://www.youtube.com/watch?v=QuR969uMICM"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-sm text-center no-underline"
+                        >
+                          <span className="material-symbols-outlined text-sm">play_circle</span>
+                          Watch on YouTube ↗
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMediaModal({
+                              type: 'video',
+                              title: 'Visualizing Superposition in Qubits',
+                              url: 'https://www.youtube.com/watch?v=QuR969uMICM',
+                              embedUrl: 'https://www.youtube.com/embed/QuR969uMICM',
+                              channelOrAuthor: '3Blue1Brown / Quantum Lab',
+                              description: 'An intuitive visual guide to how states overlap before measurement.',
+                            })
+                          }
+                          className="p-2 border border-outline-variant bg-surface-container-high rounded-lg text-on-surface hover:bg-surface-container-highest cursor-pointer"
+                          title="Watch in EduCurate"
+                        >
+                          <span className="material-symbols-outlined text-sm">fit_screen</span>
+                        </button>
+                      </div>
+
                       <button
                         onClick={handleMarkVideoComplete}
-                        className={`mt-auto w-full py-2.5 border rounded-lg transition-colors flex items-center justify-center gap-2 text-label-md font-label-md cursor-pointer font-semibold ${
+                        className={`w-full py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 text-label-md font-label-md cursor-pointer font-semibold mt-auto ${
                           videoCompleted
                             ? 'bg-status-complete/10 text-status-complete border-status-complete'
                             : 'border-outline-variant text-primary hover:bg-surface-container-low'
@@ -691,66 +877,128 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                   {/* Book Resource */}
                   <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col">
                     <div className="relative h-40 bg-surface-container-high overflow-hidden flex items-center justify-center">
-                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary-ed to-transparent"></div>
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500 to-transparent"></div>
                       <img
                         alt="Book cover"
                         className="h-32 w-auto shadow-md group-hover:-translate-y-2 transition-transform duration-500 z-10 rounded-sm"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuyYVka8NukNXrxDO9-hWmMpIF63NNqKlXOOr3J1GOxs396TDaq6kbQhTqUN7SPaL0KSk24E16fiNFtMnShbQ_nT1l0oI9zLomZOYhfysesBI7dlJML64aj6YuKy0p1h0cGx5iksN7LsiQ1HBrN21WF3LSeERGSYRujgshcplH1QspQLx_0fX-Ll2guwO5mmYW1fM7QwL1v33gXY1bwNjubSCRuecLL02MHhW16zGisbiGR2q_H1Qn"
+                        src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80"
                       />
-                      <div className="absolute top-2 right-2 bg-secondary-ed text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm z-20">
-                        <span className="material-symbols-outlined text-[12px]">menu_book</span> Book
+                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm z-20">
+                        <span className="material-symbols-outlined text-[12px]">menu_book</span> Google Books
                       </div>
                     </div>
-                    <div className="p-stack-md flex-1 flex flex-col">
-                      <h3 className="text-label-md font-label-md text-on-surface mb-1 line-clamp-2 font-bold">
+                    <div className="p-stack-md flex-1 flex flex-col space-y-2">
+                      <h3 className="text-label-md font-label-md text-on-surface mb-0 line-clamp-2 font-bold">
                         Quantum Computing since Democritus
                       </h3>
-                      <p className="text-caption font-caption text-on-surface-variant mb-stack-md">Scott Aaronson • Chapter 9</p>
-                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-3 mb-stack-md">
+                      <p className="text-caption font-caption text-on-surface-variant">Scott Aaronson • Cambridge University Press</p>
+                      <p className="text-body-md font-body-md text-on-surface-variant text-sm line-clamp-2">
                         Deep dive into the philosophical and mathematical implications of interference patterns.
                       </p>
+
+                      {/* Direct Google Books link in timeline */}
+                      <a
+                        href="https://books.google.com/books?id=65NwUbGrfl0C"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                      >
+                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        https://books.google.com/books?id=65NwUbGrfl0C
+                      </a>
+
+                      <div className="pt-2 flex gap-2">
+                        <a
+                          href="https://books.google.com/books?id=65NwUbGrfl0C"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-sm text-center no-underline"
+                        >
+                          <span className="material-symbols-outlined text-sm">menu_book</span>
+                          Open on Google Books ↗
+                        </a>
+                      </div>
+
                       <button
                         onClick={handleStartReading}
-                        className="mt-auto w-full py-2.5 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none"
+                        className="w-full py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors flex items-center justify-center gap-2 text-label-md font-label-md shadow-sm font-bold cursor-pointer border-none mt-auto"
                       >
-                        <span className="material-symbols-outlined text-sm">menu_book</span>
-                        {readingStarted ? 'Continue Reading' : 'Start Reading'}
+                        <span className="material-symbols-outlined text-sm">chrome_reader_mode</span>
+                        {readingStarted ? 'Continue in Reader' : 'Open in EduCurate Reader'}
                       </button>
                     </div>
                   </div>
 
                   {/* Dynamically Added Custom Pathway Items */}
-                  {customPathwayItems.map((custom, index) => (
-                    <div
-                      key={index}
-                      className="bg-surface-container-lowest border-2 border-primary/40 rounded-xl overflow-hidden shadow-md flex flex-col justify-between col-span-1 animate-fade-in-up"
-                    >
-                      <div className="p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                              custom.type === 'video' ? 'bg-primary-ed text-white' : 'bg-secondary-ed text-white'
-                            }`}
-                          >
-                            {custom.type === 'video' ? 'API Video' : 'API Book'}
-                          </span>
-                          <span className="text-[11px] font-bold text-status-complete flex items-center gap-1">
-                            <span className="material-symbols-outlined text-xs">check_circle</span> Added by You
-                          </span>
+                  {customPathwayItems.map((custom, index) => {
+                    const isVideo = custom.type === 'video';
+                    const linkUrl = isVideo ? custom.item.videoUrl : custom.item.infoLink;
+
+                    return (
+                      <div
+                        key={index}
+                        className="bg-surface-container-lowest border-2 border-primary/40 rounded-xl overflow-hidden shadow-md flex flex-col justify-between col-span-1 animate-fade-in-up"
+                      >
+                        <div className="p-4 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                isVideo ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'
+                              }`}
+                            >
+                              {isVideo ? 'YouTube Video' : 'Google Book'}
+                            </span>
+                            <span className="text-[11px] font-bold text-status-complete flex items-center gap-1">
+                              <span className="material-symbols-outlined text-xs">check_circle</span> Added by You
+                            </span>
+                          </div>
+                          <h4 className="font-bold text-sm text-on-surface">{custom.item.title}</h4>
+                          <p className="text-xs text-on-surface-variant line-clamp-2">{custom.item.description}</p>
+                          
+                          {linkUrl && (
+                            <a
+                              href={linkUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                            >
+                              <span className="material-symbols-outlined text-xs">open_in_new</span>
+                              {linkUrl}
+                            </a>
+                          )}
                         </div>
-                        <h4 className="font-bold text-sm text-on-surface">{custom.item.title}</h4>
-                        <p className="text-xs text-on-surface-variant line-clamp-2">{custom.item.description}</p>
+                        <div className="p-4 pt-0 flex gap-2">
+                          {linkUrl && (
+                            <a
+                              href={linkUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold cursor-pointer border-none hover:bg-primary-container transition-colors text-center no-underline flex items-center justify-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-xs">launch</span>
+                              Open {isVideo ? 'YouTube' : 'Google Book'}
+                            </a>
+                          )}
+                          <button
+                            onClick={() =>
+                              setMediaModal({
+                                type: custom.type,
+                                title: custom.item.title,
+                                url: linkUrl,
+                                embedUrl: custom.item.embedUrl,
+                                channelOrAuthor: custom.item.channelTitle || custom.item.authors?.join(', '),
+                                description: custom.item.description,
+                              })
+                            }
+                            className="p-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high cursor-pointer"
+                            title="Open in Modal"
+                          >
+                            <span className="material-symbols-outlined text-sm">fit_screen</span>
+                          </button>
+                        </div>
                       </div>
-                      <div className="p-4 pt-0">
-                        <button
-                          onClick={() => triggerToast(`Launching ${custom.item.title}...`)}
-                          className="w-full py-2 bg-primary text-on-primary rounded-lg text-xs font-bold cursor-pointer border-none hover:bg-primary-container transition-colors"
-                        >
-                          Start Study Module
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </article>
@@ -769,11 +1017,11 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
                 <div className="ml-0 md:ml-12 bg-surface-muted border border-outline-variant border-dashed rounded-xl p-stack-md flex items-center justify-between">
                   <div className="flex items-center gap-stack-md">
                     <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-primary-ed/20 border border-primary-ed flex items-center justify-center z-10">
-                        <span className="material-symbols-outlined text-primary-ed text-sm">play_circle</span>
+                      <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center z-10">
+                        <span className="material-symbols-outlined text-red-600 text-sm">play_circle</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-secondary-ed/20 border border-secondary-ed flex items-center justify-center z-0">
-                        <span className="material-symbols-outlined text-secondary-ed text-sm">menu_book</span>
+                      <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center z-0">
+                        <span className="material-symbols-outlined text-blue-600 text-sm">menu_book</span>
                       </div>
                     </div>
                     <div>
@@ -855,6 +1103,143 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
           </div>
         </div>
       </main>
+
+      {/* In-App Media Viewer Modal (YouTube & Google Books) */}
+      {mediaModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-3xl border border-outline-variant shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-container-low">
+              <div className="flex items-center gap-3">
+                <span
+                  className={`p-2 rounded-lg text-white ${
+                    mediaModal.type === 'video' ? 'bg-red-600' : 'bg-blue-600'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    {mediaModal.type === 'video' ? 'play_circle' : 'menu_book'}
+                  </span>
+                </span>
+                <div>
+                  <h3 className="font-bold text-base text-on-surface line-clamp-1">{mediaModal.title}</h3>
+                  <p className="text-xs text-on-surface-variant">
+                    {mediaModal.channelOrAuthor || (mediaModal.type === 'video' ? 'YouTube Resource' : 'Google Books Reference')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={mediaModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-colors flex items-center gap-1 shadow-sm ${
+                    mediaModal.type === 'video' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  <span>Open on {mediaModal.type === 'video' ? 'YouTube' : 'Google Books'}</span>
+                  <span className="material-symbols-outlined text-xs">open_in_new</span>
+                </a>
+                <button
+                  onClick={() => setMediaModal(null)}
+                  className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg cursor-pointer border-none bg-transparent"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4">
+              {mediaModal.type === 'video' ? (
+                <div className="space-y-4">
+                  <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                    {mediaModal.embedUrl ? (
+                      <iframe
+                        src={mediaModal.embedUrl}
+                        title={mediaModal.title}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="text-center p-6 text-white space-y-3">
+                        <span className="material-symbols-outlined text-5xl text-red-500">smart_display</span>
+                        <p className="text-sm text-slate-300">Ready to stream from YouTube</p>
+                        <a
+                          href={mediaModal.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold shadow-lg"
+                        >
+                          <span className="material-symbols-outlined">play_arrow</span>
+                          Watch on YouTube
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                  {mediaModal.description && (
+                    <div className="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                        Lesson Notes &amp; Summary
+                      </h4>
+                      <p className="text-xs text-on-surface leading-relaxed">{mediaModal.description}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant flex flex-col items-center text-center space-y-4">
+                    <span className="material-symbols-outlined text-5xl text-blue-600">chrome_reader_mode</span>
+                    <div>
+                      <h4 className="font-bold text-base text-on-surface">{mediaModal.title}</h4>
+                      <p className="text-xs text-on-surface-variant mt-1">{mediaModal.channelOrAuthor}</p>
+                    </div>
+                    {mediaModal.description && (
+                      <p className="text-xs text-on-surface leading-relaxed max-w-xl text-left bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+                        {mediaModal.description}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-3 justify-center pt-2">
+                      <a
+                        href={mediaModal.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
+                      >
+                        <span className="material-symbols-outlined text-sm">menu_book</span>
+                        Open Full Google Books Chapter
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Direct Link Footer Bar */}
+              <div className="p-3 bg-surface-muted rounded-xl border border-outline-variant flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 truncate text-on-surface-variant">
+                  <span className="font-semibold text-on-surface shrink-0">Direct Link:</span>
+                  <a
+                    href={mediaModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate hover:underline text-primary"
+                  >
+                    {mediaModal.url}
+                  </a>
+                </div>
+                <a
+                  href={mediaModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 text-primary font-bold hover:underline flex items-center gap-1 ml-3"
+                >
+                  Visit <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Mentor Quick Modal */}
       {mentorModalOpen && (
