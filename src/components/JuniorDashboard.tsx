@@ -843,6 +843,7 @@ export const JuniorDashboard: React.FC<JuniorDashboardProps> = ({ onNavigate }) 
             <DisqusComments 
               pageIdentifier="educurate-junior-portal"
               pageTitle="EduCurate Junior - Leo's Dashboard Community"
+              pageUrl="https://educurate-vy74.vercel.app/#junior"
             />
           </div>
         </section>

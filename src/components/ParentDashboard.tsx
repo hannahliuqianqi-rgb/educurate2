@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { PARENT_ADAPTATION_LOGS, APPROVED_CONTENT_QUEUE } from '../data/mockData';
 import { AppView, ParentAdaptationLog } from '../types';
+import { DisqusComments } from './DisqusComments';
 
 interface ParentDashboardProps {
   onNavigate: (view: AppView) => void;
@@ -257,6 +258,22 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({ onNavigate }) 
 
             </div>
 
+          </div>
+
+          {/* Guardian Community & Safety Forum Powered by Disqus */}
+          <div className="mt-12 space-y-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-rose-400" />
+              <h3 className="text-lg font-bold text-white">Guardian Advisory &amp; Safe Learning Forum</h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              Exchange parental oversight tips, verify screen time boundaries, or share insights on balanced digital pedagogy.
+            </p>
+            <DisqusComments 
+              pageIdentifier="educurate-parent-guardian-portal"
+              pageTitle="EduCurate - Guardian & Parent Oversight Forum"
+              pageUrl="https://educurate-vy74.vercel.app/#parent_dashboard"
+            />
           </div>
 
         </div>

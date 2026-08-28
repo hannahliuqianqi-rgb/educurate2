@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AppView } from '../types';
 import confetti from 'canvas-confetti';
+import { DisqusComments } from './DisqusComments';
 
 interface CuratorChatBuilderProps {
   onNavigate: (view: AppView) => void;
@@ -498,6 +499,22 @@ export const CuratorChatBuilder: React.FC<CuratorChatBuilderProps> = ({ onNaviga
               </div>
 
             </form>
+
+            {/* Community Feedback & Discussions on AI Pathways */}
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-xl">forum</span>
+                <h3 className="text-lg font-bold text-slate-900">AI Curriculum &amp; Custom Pathways Forum</h3>
+              </div>
+              <p className="text-xs text-slate-500">
+                Share custom prompt recipes, request new domain tracks, or collaborate on multi-discipline learning plans.
+              </p>
+              <DisqusComments 
+                pageIdentifier="educurate-ai-curator"
+                pageTitle="EduCurate - AI Adaptive Pathway Builder Community"
+                pageUrl="https://educurate-vy74.vercel.app/#curator_ai"
+              />
+            </div>
           </main>
         ) : (
           /* TALK TO AI MENTOR VIEW */

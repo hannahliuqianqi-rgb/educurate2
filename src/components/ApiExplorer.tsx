@@ -21,6 +21,7 @@ import {
   Film
 } from 'lucide-react';
 import { api } from '../lib/api';
+import { DisqusComments } from './DisqusComments';
 
 interface ApiEndpointConfig {
   id: string;
@@ -394,6 +395,22 @@ export const ApiExplorer: React.FC = () => {
             )}
 
           </div>
+        </div>
+
+        {/* Developer & Integration Forum Powered by Disqus */}
+        <div className="mt-12 space-y-4">
+          <div className="flex items-center gap-2">
+            <Code2 className="w-5 h-5 text-indigo-400" />
+            <h3 className="text-lg font-bold text-white">Developer API &amp; Integration Forum</h3>
+          </div>
+          <p className="text-xs text-slate-400">
+            Discuss Google Cloud backend routes, latency optimizations, or request additional YouTube / Google Books endpoints.
+          </p>
+          <DisqusComments 
+            pageIdentifier="educurate-api-developer-explorer"
+            pageTitle="EduCurate - Developer & API Integration Forum"
+            pageUrl="https://educurate-vy74.vercel.app/#api_explorer"
+          />
         </div>
 
       </div>

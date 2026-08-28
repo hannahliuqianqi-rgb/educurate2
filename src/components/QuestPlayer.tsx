@@ -22,6 +22,7 @@ import {
 import { QUEST_STEPS } from '../data/mockData';
 import { AppView } from '../types';
 import confetti from 'canvas-confetti';
+import { DisqusComments } from './DisqusComments';
 
 interface QuestPlayerProps {
   onNavigate: (view: AppView) => void;
@@ -434,6 +435,26 @@ export const QuestPlayer: React.FC<QuestPlayerProps> = ({ onNavigate }) => {
               </div>
             </div>
 
+          </div>
+
+          {/* Interactive Community Discussion Thread for Quest */}
+          <div className="mt-12 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-purple-400" />
+                  <span>Quest Discussions &amp; Student Questions</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Discuss stellar equilibrium, share astrophysics insights, or ask questions to fellow peers.
+                </p>
+              </div>
+            </div>
+            <DisqusComments 
+              pageIdentifier="educurate-quest-player"
+              pageTitle="EduCurate - Stellar Astrophysics Quest Community"
+              pageUrl="https://educurate-vy74.vercel.app/#quest_player"
+            />
           </div>
 
         </div>

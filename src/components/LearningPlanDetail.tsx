@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppView } from '../types';
 import confetti from 'canvas-confetti';
+import { DisqusComments } from './DisqusComments';
 
 interface LearningPlanDetailProps {
   onNavigate: (view: AppView) => void;
@@ -1386,6 +1387,26 @@ export const LearningPlanDetail: React.FC<LearningPlanDetailProps> = ({ onNaviga
           </div>
         </div>
       )}
+
+      {/* Community Comments & Discussion on Learning Plan */}
+      <section className="w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop my-12 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-xl">forum</span>
+              <h3 className="text-xl font-bold text-slate-900">Quantum Computing Cohort &amp; Feedback</h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Ask questions on Day 3 topics, share additional lecture recommendations, or post study group notes.
+            </p>
+          </div>
+        </div>
+        <DisqusComments 
+          pageIdentifier="educurate-learning-plan-detail"
+          pageTitle="EduCurate - Quantum Computing Pathway Discussion"
+          pageUrl="https://educurate-vy74.vercel.app/#learning_plan"
+        />
+      </section>
 
       {/* Footer */}
       <footer className="w-full py-stack-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-slate-50 border-t border-slate-200 md:ml-0 mb-16 md:mb-0 mt-12">
