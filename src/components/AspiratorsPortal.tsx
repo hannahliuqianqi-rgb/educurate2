@@ -391,8 +391,9 @@ export const AspiratorsPortal: React.FC<AspiratorsPortalProps> = ({ onNavigate }
           {/* Interactive Community Comment Box via Disqus */}
           <div className="space-y-6">
             <DisqusComments 
-              pageIdentifier="educurate-aspirators-portal"
-              pageTitle="EduCurate Aspirators Discovery Community"
+              pageIdentifier="PORTAL FEEDBACK AND STUDENT COMMUNITY"
+              pageTitle="Portal Feedback & Student Community"
+              pageUrl="https://educurate-vy74.vercel.app/"
             />
           </div>
         </section>
