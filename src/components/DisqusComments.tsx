@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface DisqusCommentsProps {
   pageIdentifier?: string;
@@ -25,69 +25,87 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const threadRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const targetUrl = pageUrl || 'https://educurate-vy74.vercel.app/';
     const targetIdentifier = pageIdentifier || 'PORTAL FEEDBACK AND STUDENT COMMUNITY';
 
-    window.disqus_config = function (this: any) {
-      this.page = this.page || {};
-      this.page.url = targetUrl;
-      this.page.identifier = targetIdentifier;
-      this.page.title = pageTitle;
-    };
+    try {
+      window.disqus_config = function (this: any) {
+        this.page = this.page || {};
+        this.page.url = targetUrl;
+        this.page.identifier = targetIdentifier;
+        this.page.title = pageTitle;
+      };
 
-    if (window.DISQUS) {
-      try {
-        window.DISQUS.reset({
-          reload: true,
-          config: function (this: any) {
-            this.page = this.page || {};
-            this.page.url = targetUrl;
-            this.page.identifier = targetIdentifier;
-            this.page.title = pageTitle;
-          },
-        });
-        setIsLoading(false);
-      } catch (e) {
-        console.warn('Disqus reset notice:', e);
-      }
-    } else {
-      const scriptId = 'disqus-embed-script';
-      const existingScript = document.getElementById(scriptId);
-      
-      if (!existingScript) {
-        const d = document;
-        const s = d.createElement('script');
-        s.id = scriptId;
-        s.src = 'https://educuarte.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', String(+new Date()));
-        s.async = true;
-        s.onload = () => setIsLoading(false);
-        s.onerror = () => {
-          setIsLoading(false);
-          setHasError(true);
-        };
-        (d.head || d.body).appendChild(s);
+      if (window.DISQUS && typeof window.DISQUS.reset === 'function') {
+        try {
+          window.DISQUS.reset({
+            reload: true,
+            config: function (this: any) {
+              this.page = this.page || {};
+              this.page.url = targetUrl;
+              this.page.identifier = targetIdentifier;
+              this.page.title = pageTitle;
+            },
+          });
+          if (isMounted) setIsLoading(false);
+        } catch (e) {
+          console.debug('Disqus reset notice:', e);
+        }
       } else {
+        const scriptId = 'disqus-embed-script';
+        const existingScript = document.getElementById(scriptId);
+        
+        if (!existingScript) {
+          const s = document.createElement('script');
+          s.id = scriptId;
+          s.src = 'https://educuarte.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', String(+new Date()));
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.onload = () => {
+            if (isMounted) setIsLoading(false);
+          };
+          s.onerror = () => {
+            if (isMounted) {
+              setIsLoading(false);
+              setHasError(true);
+            }
+          };
+          (document.head || document.body).appendChild(s);
+        } else {
+          if (isMounted) setIsLoading(false);
+        }
+      }
+    } catch (err) {
+      console.debug('Disqus init notice:', err);
+      if (isMounted) {
         setIsLoading(false);
+        setHasError(true);
       }
     }
 
-    // Timer fallback in case Disqus iframe loads without script onload event
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
   }, [pageIdentifier, pageTitle, pageUrl]);
 
   return (
     <div className="w-full bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-lg text-slate-800 relative transition-all">
       {/* Disqus Target Container */}
-      <div id="disqus_thread" className="min-h-[220px] relative z-10" />
+      <div id="disqus_thread" ref={threadRef} className="min-h-[220px] relative z-10" />
 
-      {/* Loading & Privacy Guard Fallback Indicator */}
+      {/* Loading Indicator */}
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-10 text-slate-500 gap-3">
           <div className="w-8 h-8 border-3 border-primary/20 border-t-primary rounded-full animate-spin" />
@@ -99,9 +117,12 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3 mt-4">
           <span className="material-symbols-outlined text-amber-600 text-lg flex-shrink-0">shield</span>
           <div>
-            <p className="font-semibold mb-0.5">Disqus script blocked by browser privacy protection</p>
+            <p className="font-semibold mb-0.5">Disqus comments unavailable in this preview sandbox</p>
             <p className="text-amber-800">
-              If you have an ad-blocker or strict tracking protection enabled (e.g. Brave Shields, uBlock), please allow <code>disqus.com</code> to participate in the comments thread.
+              Third-party cookies or scripts are restricted in iframe mode. You can view comments directly at{' '}
+              <a href="https://educurate-vy74.vercel.app/" target="_blank" rel="noreferrer" className="underline font-semibold">
+                educurate-vy74.vercel.app
+              </a>.
             </p>
           </div>
         </div>
@@ -118,5 +139,6 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({
     </div>
   );
 };
+
 
 
