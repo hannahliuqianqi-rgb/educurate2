@@ -174,6 +174,19 @@ export const api = {
   },
 
   /**
+   * YouTube: Kids Safe Educational Search (Top 3 videos)
+   * GET /api/youtube/kids-search?q=QUERY&maxResults=3
+   */
+  async searchKidsVideos(query: string, maxResults = 3): Promise<{ query: string; mock?: boolean; count: number; items: any[]; notice?: string }> {
+    const params = new URLSearchParams({ q: query, maxResults: String(maxResults) });
+    const res = await fetch(`/api/youtube/kids-search?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error(`Failed to search kid videos: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  /**
    * Books: search volumes (key mandatory)
    * GET /api/books/volumes?q=QUERY&maxResults=10
    */
