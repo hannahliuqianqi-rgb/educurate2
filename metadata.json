@@ -1,0 +1,7 @@
+{
+  "name": "EduCurate - AI Learning Platform",
+  "description": "A single home for trusted learning across every age, featuring personalized AI mentorship, child-friendly discovery portals, parent dashboards, and guided curations.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
